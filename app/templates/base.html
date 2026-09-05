@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ site.name }} - {% if modules and modules[0].type == 'hero' %}{{ modules[0].data.headline | default(site.name) }}{% else %}{{ site.name }}{% endif %}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://{{ site.domain }}/">
+    <meta property="og:title" content="{{ site.name }}">
+    <meta property="og:description" content="{{ site.name }} - {% if modules and modules[0].type == 'hero' %}{{ modules[0].data.headline | default(site.name) }}{% else %}{{ site.name }}{% endif %}">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://{{ site.domain }}/">
+    <meta property="twitter:title" content="{{ site.name }}">
+    
+    <title>{{ site.name }}</title>
+    
+    <!-- Favicon -->
+    {% if config and config.favicon_image %}
+    <link rel="icon" href="{{ config.favicon_image }}">
+    {% else %}
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    {% endif %}
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/static/css/define.css?v=20260205g">
+    <link rel="stylesheet" href="/static/css/base.css?v=20260614a">
+    <link rel="stylesheet" href="/static/css/components.css?v=20260614b">
+    {% if is_admin %}
+    <link rel="stylesheet" href="/static/css/admin.css?v=20260205g">
+    {% endif %}
+    
+    <!-- Plausible Analytics (cookie-less) -->
+    {% if analytics_enabled and plausible_domain %}
+    <script defer data-domain="{{ plausible_domain }}" src="{{ plausible_script_src }}"></script>
+    {% endif %}
+    
+    <!-- Theme-specific CSS variables -->
+    <style>
+        :root {
+            {% for key, value in css_variables.items() %}
+            {{ key }}: {{ value }};
+            {% endfor %}
+        }
+    </style>
+    
+    <!-- Schema.org structured data -->
+    {% block schema_org %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "{% if site.type == 'band' %}MusicGroup{% else %}LocalBusiness{% endif %}",
+        "name": "{{ site.name }}",
+        "url": "https://{{ site.domain }}"
+        {% if content.contact_phone %},
+        "telephone": "{{ content.contact_phone }}"
+        {% endif %}
+        {% if content.contact_email %},
+        "email": "{{ content.contact_email }}"
+        {% endif %}
+        {% if content.contact_address %},
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "{{ content.contact_address }}"
+        }
+        {% endif %}
+    }
+    </script>
+    {% endblock %}
+</head>
+<body class="theme-{{ theme }}" data-theme="{{ theme }}">
+    {% if is_admin %}
+    <!-- Admin Toolbar -->
+    <div class="admin-toolbar" id="admin-toolbar">
+        <button class="admin-toolbar-btn" id="eye-toggle" title="Bereiche verwalten (anzeigen/ausblenden/sortieren)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        </button>
+        <button class="admin-toolbar-btn" id="undo-btn" title="Rückgängig">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 7v6h6"></path>
+                <path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"></path>
+            </svg>
+        </button>
+        <div class="admin-toolbar-dropdown">
+            <button class="admin-toolbar-btn" id="menu-toggle" title="Menü">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+            <div class="admin-dropdown-content" id="admin-dropdown">
+                {% if maintenance_mode %}
+                <div class="dropdown-maintenance-indicator">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    Wartungsmodus aktiv
+                </div>
+                {% endif %}
+                <a href="/admin/users">Benutzer verwalten</a>
+                <button type="button" id="favicon-upload-btn" class="dropdown-btn">Favicon ändern</button>
+                <form action="/admin/logout" method="POST" class="logout-form">
+                    <button type="submit" class="dropdown-logout-btn">Abmelden</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Header / Navigation -->
+    <header class="site-header" id="site-header">
+        <nav class="nav-container">
+            <a href="/" class="nav-logo" {% if is_admin %}data-logo-editable="true" title="Klicken zum Ändern des Logos"{% endif %}>
+                {% if config.logo_image %}
+                <img src="{{ config.logo_image }}" alt="{{ site.name }}" class="logo-img">
+                {% else %}
+                <span class="logo-text">{{ site.name }}</span>
+                {% endif %}
+            </a>
+            
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span class="nav-toggle-bar"></span>
+                <span class="nav-toggle-bar"></span>
+                <span class="nav-toggle-bar"></span>
+            </button>
+            
+            <ul class="nav-menu" id="nav-menu">
+                {% for item in nav_items %}
+                <li class="nav-item">
+                    {% if is_admin %}
+                    <a href="{{ item.anchor }}" class="nav-link" data-nav-editable="{{ item.type }}" title="Klicken zum Bearbeiten">{{ item.label }}</a>
+                    {% else %}
+                    <a href="{{ item.anchor }}" class="nav-link">{{ item.label }}</a>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="site-main">
+        {% if is_admin and all_modules_ordered %}
+        <!-- Admin view: All modules in correct order (enabled + disabled) -->
+        {% for module in all_modules_ordered %}
+        {% if module.enabled %}
+        {% include "modules/" + module.type + ".html" ignore missing %}
+        {% else %}
+        <!-- Disabled module (visible only in eye mode) -->
+        <section class="module module-{{ module.type }} module-disabled" id="{{ module.type }}" data-module="{{ module.type }}" data-module-label="{{ module.title or module.type }}" style="display: none;">
+            <!-- Content hidden - only visible as collapsed row in eye mode -->
+        </section>
+        {% endif %}
+        {% endfor %}
+        {% else %}
+        <!-- Public view: Only enabled modules -->
+        {% for module in modules %}
+        {% include "modules/" + module.type + ".html" ignore missing %}
+        {% endfor %}
+        {% endif %}
+    </main>
+    
+    <!-- Scripts -->
+    <script src="/static/js/nav.js?v=20260205g"></script>
+    {% if is_admin %}
+    <script src="/static/js/admin.js?v=20260614a"></script>
+    {% endif %}
+</body>
+</html>

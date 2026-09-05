@@ -1,0 +1,48 @@
+# Systemd service template for WebsiteCMS
+# Replace variables: {{SITENAME}}, {{SITE_DIR}}
+#
+# Installation:
+#   1. Copy to /etc/systemd/system/websitecms-{{SITENAME}}.service
+#   2. Replace all {{variables}} with actual values
+#   3. Run: sudo systemctl daemon-reload
+#   4. Run: sudo systemctl enable websitecms-{{SITENAME}}.service
+#   5. Run: sudo systemctl start websitecms-{{SITENAME}}.service
+
+[Unit]
+Description=WebsiteCMS - {{SITENAME}}
+Documentation=https://github.com/your-org/websitecms
+After=docker.service network-online.target
+Requires=docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory={{SITE_DIR}}
+
+# Start command - bring up docker compose
+ExecStart=/usr/bin/docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+# Stop command - bring down docker compose
+ExecStop=/usr/bin/docker compose down
+
+# Reload command - restart containers
+ExecReload=/usr/bin/docker compose restart
+
+# Timeout for start/stop operations
+TimeoutStartSec=120
+TimeoutStopSec=60
+
+# Restart policy - don't restart automatically (docker handles container restarts)
+Restart=no
+
+# Environment
+Environment="COMPOSE_PROJECT_NAME=websitecms-{{SITENAME}}"
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=websitecms-{{SITENAME}}
+
+[Install]
+WantedBy=multi-user.target

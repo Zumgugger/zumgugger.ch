@@ -1,0 +1,240 @@
+<!-- Contact Module -->
+<section class="module module-contact" id="contact"{% if is_admin %} data-module="contact" data-module-label="{{ module.title or module.type }}"{% endif %}>
+    <div class="container">
+        <h2 class="section-title"{% if is_admin %} data-nav-editable="{{ module.type }}" title="Klicken zum Bearbeiten"{% endif %}>{{ module.title }}</h2>
+        
+        <div class="contact-grid">
+            <!-- Contact Form -->
+            <div class="contact-form-container">
+                <form class="contact-form" id="contact-form" action="/api/contact/submit" method="POST">
+                    <!-- Honeypot field for spam protection -->
+                    <div class="hp-field" aria-hidden="true">
+                        <label for="website">Website</label>
+                        <input type="text" name="website" id="website" tabindex="-1" autocomplete="off">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contact-field" class="form-label">Kontakt (E-Mail oder Telefon) *</label>
+                        <input 
+                            type="text" 
+                            id="contact-field" 
+                            name="contact" 
+                            required 
+                            class="form-input"
+                            placeholder="E-Mail oder Telefonnummer"
+                            autocomplete="email tel"
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message" class="form-label">Nachricht *</label>
+                        <textarea 
+                            id="message" 
+                            name="message" 
+                            required 
+                            class="form-textarea"
+                            rows="5"
+                            placeholder="Ihre Nachricht..."
+                        ></textarea>
+                    </div>
+                    
+                    <!-- Cloudflare Turnstile CAPTCHA placeholder -->
+                    <div id="captcha-container" class="form-group captcha-container"></div>
+                    
+                    <button type="submit" class="btn btn-primary form-submit">
+                        Nachricht senden
+                    </button>
+                    
+                    <div class="form-message form-message-success" id="form-success" hidden>
+                        <p>Vielen Dank für Ihre Nachricht! Wir melden uns baldmöglichst bei Ihnen.</p>
+                    </div>
+                    
+                    <div class="form-message form-message-error" id="form-error" hidden>
+                        <p>Es gab einen Fehler beim Senden Ihrer Nachricht. Bitte versuchen Sie es später erneut.</p>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Contact Info -->
+            <div class="contact-info">
+                {% if module.data.phone %}
+                <div class="contact-info-item">
+                    <div class="contact-info-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
+                    </div>
+                    <div class="contact-info-content">
+                        <span class="contact-info-label">Telefon</span>
+                        <a href="tel:{{ module.data.phone }}" class="contact-info-value"{% if is_admin %} data-editable="true" data-field="contact_phone" contenteditable="true"{% endif %}>
+                            {{ module.data.phone }}
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if module.data.email %}
+                <div class="contact-info-item">
+                    <div class="contact-info-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                    </div>
+                    <div class="contact-info-content">
+                        <span class="contact-info-label">E-Mail</span>
+                        <a href="mailto:{{ module.data.email }}" class="contact-info-value"{% if is_admin %} data-editable="true" data-field="contact_email" contenteditable="true"{% endif %}>
+                            {{ module.data.email }}
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if module.data.address %}
+                <div class="contact-info-item">
+                    <div class="contact-info-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                    </div>
+                    <div class="contact-info-content">
+                        <span class="contact-info-label">Adresse</span>
+                        {% if module.data.maps_link %}
+                        <a href="{{ module.data.maps_link }}" target="_blank" rel="noopener noreferrer" class="contact-info-value"{% if is_admin %} data-editable="true" data-field="contact_address" contenteditable="true"{% endif %}>
+                            {{ module.data.address }}
+                        </a>
+                        {% else %}
+                        <span class="contact-info-value"{% if is_admin %} data-editable="true" data-field="contact_address" contenteditable="true"{% endif %}>
+                            {{ module.data.address }}
+                        </span>
+                        {% endif %}
+                        {% if is_admin %}
+                        <span class="contact-maps-link-edit" data-editable="true" data-field="contact_maps_link" contenteditable="true" title="Google-Maps-Link bearbeiten">{{ module.data.maps_link | default("Maps-Link hinzufügen") }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if is_admin and not module.data.phone and not module.data.email and not module.data.address %}
+                <div class="contact-info-empty">
+                    <p>Keine Kontaktdaten vorhanden. Klicken Sie hier, um Kontaktdaten hinzuzufügen.</p>
+                    <button class="btn btn-secondary" id="add-contact-info">Kontaktdaten hinzufügen</button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Contact form initialization
+(function() {
+    let turnstileWidgetId = null;
+    let captchaEnabled = false;
+    
+    // Load CAPTCHA configuration and initialize if enabled
+    async function initCaptcha() {
+        try {
+            const response = await fetch('/api/contact/config');
+            if (!response.ok) return;
+            
+            const config = await response.json();
+            captchaEnabled = config.captcha_enabled;
+            
+            if (captchaEnabled && config.captcha_site_key) {
+                // Load Turnstile script
+                const script = document.createElement('script');
+                script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+                script.async = true;
+                script.defer = true;
+                script.onload = function() {
+                    // Render the widget
+                    const container = document.getElementById('captcha-container');
+                    if (container && window.turnstile) {
+                        turnstileWidgetId = turnstile.render(container, {
+                            sitekey: config.captcha_site_key,
+                            theme: 'light',
+                            callback: function(token) {
+                                // Token will be submitted with the form
+                            }
+                        });
+                    }
+                };
+                document.head.appendChild(script);
+            }
+        } catch (error) {
+            console.debug('CAPTCHA config not available');
+        }
+    }
+    
+    // Initialize CAPTCHA on page load
+    initCaptcha();
+    
+    // Contact form handling
+    document.getElementById('contact-form')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const form = this;
+        const submitBtn = form.querySelector('.form-submit');
+        const successMsg = document.getElementById('form-success');
+        const errorMsg = document.getElementById('form-error');
+        
+        // Hide any previous messages
+        successMsg.hidden = true;
+        errorMsg.hidden = true;
+        
+        // Disable button
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Wird gesendet...';
+        
+        try {
+            const formData = new FormData(form);
+            
+            // Get Turnstile token if available
+            if (captchaEnabled && window.turnstile && turnstileWidgetId !== null) {
+                const token = turnstile.getResponse(turnstileWidgetId);
+                if (token) {
+                    formData.set('cf-turnstile-response', token);
+                }
+            }
+            
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok && result.status === 'submitted') {
+                successMsg.hidden = false;
+                form.reset();
+                // Reset CAPTCHA widget
+                if (captchaEnabled && window.turnstile && turnstileWidgetId !== null) {
+                    turnstile.reset(turnstileWidgetId);
+                }
+            } else {
+                // Show error message (could be CAPTCHA failure)
+                const errorP = errorMsg.querySelector('p');
+                if (result.message) {
+                    errorP.textContent = result.message;
+                } else {
+                    errorP.textContent = 'Es gab einen Fehler beim Senden Ihrer Nachricht. Bitte versuchen Sie es später erneut.';
+                }
+                errorMsg.hidden = false;
+                // Reset CAPTCHA widget on error
+                if (captchaEnabled && window.turnstile && turnstileWidgetId !== null) {
+                    turnstile.reset(turnstileWidgetId);
+                }
+            }
+        } catch (error) {
+            const errorP = errorMsg.querySelector('p');
+            errorP.textContent = 'Es gab einen Fehler beim Senden Ihrer Nachricht. Bitte versuchen Sie es später erneut.';
+            errorMsg.hidden = false;
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Nachricht senden';
+        }
+    });
+})();
+</script>

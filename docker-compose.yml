@@ -1,0 +1,60 @@
+services:
+  websitecms:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: websitecms
+    ports:
+      - "127.0.0.1:30000:8002"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - DATABASE_URL=sqlite:///data/site.db
+      - PORT=8002
+      - DEBUG=${DEBUG:-false}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+      - SESSION_TIMEOUT_SECONDS=${SESSION_TIMEOUT_SECONDS:-86400}
+      # SMTP Configuration
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USERNAME=${SMTP_USERNAME:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - SMTP_FROM=${SMTP_FROM:-}
+      - SMTP_STARTTLS=${SMTP_STARTTLS:-true}
+      - CONTACT_TO_EMAIL=${CONTACT_TO_EMAIL:-}
+      # SMS Configuration (optional)
+      - SMS_ENABLED=${SMS_ENABLED:-false}
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID:-}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN:-}
+      - TWILIO_FROM_NUMBER=${TWILIO_FROM_NUMBER:-}
+      - SMS_RECIPIENT_NUMBER=${SMS_RECIPIENT_NUMBER:-}
+      # CAPTCHA Configuration (optional)
+      - CAPTCHA_ENABLED=${CAPTCHA_ENABLED:-false}
+      - TURNSTILE_SITE_KEY=${TURNSTILE_SITE_KEY:-}
+      - TURNSTILE_SECRET_KEY=${TURNSTILE_SECRET_KEY:-}
+      # Analytics Configuration (optional)
+      - ANALYTICS_ENABLED=${ANALYTICS_ENABLED:-false}
+      - PLAUSIBLE_DOMAIN=${PLAUSIBLE_DOMAIN:-}
+      - PLAUSIBLE_SCRIPT_SRC=${PLAUSIBLE_SCRIPT_SRC:-}
+      # Maintenance Mode
+      - MAINTENANCE_MODE=${MAINTENANCE_MODE:-false}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M

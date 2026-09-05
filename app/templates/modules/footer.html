@@ -1,0 +1,118 @@
+<!-- Footer Module -->
+<!-- Using <section> instead of <footer> to prevent HTML5 parser from moving it outside <main> -->
+<section class="module module-footer site-footer" id="footer" role="contentinfo"{% if is_admin %} data-module="footer" data-module-label="{{ module.title or module.type }}"{% endif %}>
+    <div class="container footer-container">
+        <!-- Footer Contact Info (shared with Contact module) -->
+        {% if module.data.phone or module.data.email or module.data.address %}
+        <div class="footer-contact">
+            {% if module.data.phone %}
+            <a href="tel:{{ module.data.phone }}" class="footer-contact-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                <span>{{ module.data.phone }}</span>
+            </a>
+            {% endif %}
+            
+            {% if module.data.email %}
+            <a href="mailto:{{ module.data.email }}" class="footer-contact-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                <span>{{ module.data.email }}</span>
+            </a>
+            {% endif %}
+            
+            {% if module.data.address %}
+            <span class="footer-contact-item footer-address">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <span>{{ module.data.address }}</span>
+            </span>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <!-- Social Links -->
+        {% if module.data.social_links %}
+        <div class="footer-social">
+            {% for link in module.data.social_links %}
+            {% if is_admin %}
+            <div class="social-link social-link-{{ link.platform }} social-link-admin" data-index="{{ loop.index0 }}" data-platform="{{ link.platform }}" data-url="{{ link.url }}" data-label="{{ link.label | default(link.platform | capitalize) }}" title="Klicken zum Bearbeiten">
+            {% else %}
+            <a href="{{ link.url }}" class="social-link social-link-{{ link.platform }}" target="_blank" rel="noopener noreferrer" title="{{ link.label | default(link.platform | capitalize) }}">
+            {% endif %}
+                {% if link.platform == "instagram" %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+                {% elif link.platform == "facebook" %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                </svg>
+                {% elif link.platform == "youtube" %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
+                    <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+                </svg>
+                {% elif link.platform == "spotify" %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                </svg>
+                {% elif link.platform == "email" %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                {% else %}
+                <!-- Generic link icon for custom platforms -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+                {% endif %}
+            {% if is_admin %}
+            </div>
+            {% else %}
+            </a>
+            {% endif %}
+            {% endfor %}
+            
+            {% if is_admin %}
+            <button class="btn-add-social" data-field="footer_social_links" title="Social Link hinzufügen">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+            {% endif %}
+        </div>
+        {% elif is_admin %}
+        <div class="footer-social footer-social-empty">
+            <button class="btn-add-social" data-field="footer_social_links" title="Social Link hinzufügen">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Social Links hinzufügen</span>
+            </button>
+        </div>
+        {% endif %}
+        
+        <!-- Legal Links -->
+        <div class="footer-legal">
+            <a href="/impressum" class="footer-legal-link">Impressum</a>
+            <a href="/datenschutz" class="footer-legal-link">Datenschutz</a>
+        </div>
+        
+        <!-- Copyright -->
+        <div class="footer-copyright">
+            <p>&copy; {{ current_year }} {{ site.name }}</p>
+        </div>
+    </div>
+</section>

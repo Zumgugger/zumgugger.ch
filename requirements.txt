@@ -1,0 +1,45 @@
+# WebsiteCMS Dependencies
+# Versions are pinned to prevent dependency drift between rebuilds.
+# starlette is pinned explicitly because it ships transitively via fastapi
+# and an unpinned upgrade previously broke TemplateResponse() in production.
+
+# Web framework
+fastapi==0.124.4
+starlette==0.44.0
+uvicorn[standard]==0.33.0
+
+# Database
+sqlalchemy==2.0.48
+
+# Configuration & validation
+pydantic==2.10.6
+pydantic-settings==2.8.1
+python-dotenv==1.0.1
+
+# Security
+bcrypt==5.0.0
+
+# Templating
+jinja2==3.1.6
+
+# Async file handling
+aiofiles==24.1.0
+
+# File uploads
+python-multipart==0.0.20
+
+# Image processing
+pillow==10.4.0
+
+# Phone number validation/normalization
+phonenumbers>=8.13.0
+
+# SMS (Twilio)
+twilio>=8.10.0
+
+# HTTP client (for CAPTCHA verification)
+httpx==0.28.1
+
+# Testing
+pytest==8.3.5
+pytest-asyncio==0.24.0

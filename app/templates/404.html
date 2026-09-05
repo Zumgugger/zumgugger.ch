@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="Seite nicht gefunden - {{ site.name }}">
+    
+    <title>Seite nicht gefunden – {{ site.name }}</title>
+    
+    <!-- Favicon -->
+    {% if config and config.favicon_image %}
+    <link rel="icon" href="{{ config.favicon_image }}">
+    {% else %}
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    {% endif %}
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/static/css/define.css?v=20260205">
+    <link rel="stylesheet" href="/static/css/base.css?v=20260205">
+    <link rel="stylesheet" href="/static/css/components.css?v=20260205">
+    {% if is_admin %}
+    <link rel="stylesheet" href="/static/css/admin.css?v=20260205">
+    {% endif %}
+    
+    <!-- Theme-specific CSS variables -->
+    <style>
+        :root {
+            {% for key, value in css_variables.items() %}
+            {{ key }}: {{ value }};
+            {% endfor %}
+        }
+        
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 80px);
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .error-code {
+            font-size: 8rem;
+            font-weight: 700;
+            color: var(--color-primary, #333);
+            line-height: 1;
+            margin-bottom: 1rem;
+            opacity: 0.2;
+        }
+        
+        .error-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-heading, #333);
+            margin-bottom: 1rem;
+        }
+        
+        .error-message {
+            font-size: 1.125rem;
+            color: var(--color-text, #666);
+            margin-bottom: 2rem;
+            max-width: 500px;
+        }
+        
+        .error-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .error-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--color-primary, #333);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+        
+        .error-link:hover {
+            background-color: var(--color-primary-dark, #222);
+        }
+        
+        .error-link-secondary {
+            background-color: transparent;
+            color: var(--color-primary, #333);
+            border: 2px solid var(--color-primary, #333);
+        }
+        
+        .error-link-secondary:hover {
+            background-color: var(--color-primary, #333);
+            color: white;
+        }
+        
+        .error-nav {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--color-border, #e5e5e5);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .error-nav-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-text, #666);
+            margin-bottom: 1rem;
+        }
+        
+        .error-nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .error-nav-link {
+            color: var(--color-primary, #333);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .error-nav-link:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .error-code {
+                font-size: 5rem;
+            }
+            
+            .error-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="theme-{{ theme }}" data-theme="{{ theme }}">
+    <!-- Header / Navigation -->
+    <header class="site-header" id="site-header">
+        <nav class="nav-container">
+            <a href="/" class="nav-logo">
+                {% if config and config.logo_image %}
+                <img src="{{ config.logo_image }}" alt="{{ site.name }}" class="logo-img">
+                {% else %}
+                <span class="logo-text">{{ site.name }}</span>
+                {% endif %}
+            </a>
+            
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span class="nav-toggle-bar"></span>
+                <span class="nav-toggle-bar"></span>
+                <span class="nav-toggle-bar"></span>
+            </button>
+            
+            <ul class="nav-menu" id="nav-menu">
+                {% for item in nav_items %}
+                <li class="nav-item">
+                    <a href="/{{ item.anchor }}" class="nav-link">{{ item.label }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    </header>
+    
+    <!-- Error Content -->
+    <main class="error-container">
+        <div class="error-code">404</div>
+        <h1 class="error-title">Seite nicht gefunden</h1>
+        <p class="error-message">
+            Die von Ihnen gesuchte Seite existiert leider nicht oder wurde verschoben.
+        </p>
+        
+        <div class="error-actions">
+            <a href="/" class="error-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                Zurück zur Startseite
+            </a>
+        </div>
+        
+        {% if nav_items %}
+        <div class="error-nav">
+            <p class="error-nav-title">Vielleicht suchen Sie:</p>
+            <div class="error-nav-links">
+                {% for item in nav_items %}
+                <a href="/{{ item.anchor }}" class="error-nav-link">{{ item.label }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </main>
+    
+    <!-- Scripts -->
+    <script src="/static/js/nav.js?v=20260205"></script>
+</body>
+</html>

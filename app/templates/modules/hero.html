@@ -1,0 +1,34 @@
+<!-- Hero Module -->
+<section class="module module-hero" id="hero"{% if is_admin %} data-module="hero" data-module-label="{{ module.title or module.type }}"{% endif %}>
+    {% if module.data.bg_image %}
+    <div class="hero-background" style="background-image: url('{{ module.data.bg_image }}');">
+        <div class="hero-overlay"></div>
+    </div>
+    {% else %}
+    <div class="hero-background hero-background-default">
+        <div class="hero-overlay"></div>
+    </div>
+    {% endif %}
+    
+    <div class="hero-content container">
+        <h1 class="hero-headline"{% if is_admin %} data-editable="true" data-field="hero_headline" contenteditable="true"{% endif %}>
+            {{ module.data.headline | default("Willkommen") }}
+        </h1>
+        
+        <a href="#{{ module.data.cta_target | default('contact') }}" class="hero-cta btn btn-primary">
+            <span{% if is_admin %} data-editable="true" data-field="hero_cta_text" contenteditable="true"{% endif %}>{{ module.data.cta_text | default("Kontakt") }}</span>
+        </a>
+    </div>
+    
+    {% if is_admin %}
+    <div class="hero-image-upload" data-field="hero_bg_image">
+        <button class="btn-image-upload" title="Hintergrundbild ändern">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+        </button>
+    </div>
+    {% endif %}
+</section>

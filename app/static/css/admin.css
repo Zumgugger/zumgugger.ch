@@ -1,0 +1,588 @@
+/**
+ * Admin-only styles - Edit mode and toolbar
+ */
+
+/* ========================================
+   ADMIN TOOLBAR
+======================================== */
+
+.admin-toolbar {
+    position: fixed;
+    bottom: var(--spacing-lg);
+    right: var(--spacing-lg);
+    z-index: var(--z-admin);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background-color: var(--color-bg-dark);
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-xl);
+}
+
+.admin-toolbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    color: var(--color-text-inverse);
+    background-color: transparent;
+    transition: background-color var(--transition-fast);
+}
+
+.admin-toolbar-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.admin-toolbar-btn.active {
+    background-color: var(--color-primary);
+}
+
+/* Admin Dropdown */
+.admin-toolbar-dropdown {
+    position: relative;
+}
+
+.admin-dropdown-content {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: var(--spacing-sm);
+    min-width: 180px;
+    background-color: var(--color-bg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all var(--transition-fast);
+}
+
+.admin-toolbar-dropdown:hover .admin-dropdown-content,
+.admin-dropdown-content.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.admin-dropdown-content a,
+.admin-dropdown-content button {
+    display: block;
+    width: 100%;
+    padding: var(--spacing-md);
+    text-align: left;
+    color: var(--color-text);
+    transition: background-color var(--transition-fast);
+}
+
+.admin-dropdown-content a:hover,
+.admin-dropdown-content button:hover {
+    background-color: var(--color-bg-muted);
+    text-decoration: none;
+}
+
+.logout-form {
+    border-top: 1px solid var(--color-border);
+}
+
+.dropdown-logout-btn {
+    color: var(--color-error);
+}
+
+/* Maintenance Mode Indicator */
+.dropdown-maintenance-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #fff3cd;
+    color: #856404;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.dropdown-maintenance-indicator svg {
+    flex-shrink: 0;
+    color: #856404;
+}
+
+/* Nav Label Editing */
+[data-nav-editable] {
+    cursor: pointer;
+    transition: outline 0.15s ease, background-color 0.15s ease;
+}
+
+[data-nav-editable]:hover {
+    outline: 2px dashed var(--color-primary, #333);
+    outline-offset: 2px;
+}
+
+[data-nav-editable][contenteditable="true"] {
+    outline: 2px solid var(--color-primary, #333);
+    outline-offset: 2px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 0.25rem 0.5rem;
+    border-radius: 2px;
+}
+
+/* Logo Editable */
+[data-logo-editable] {
+    cursor: pointer;
+    transition: outline 0.15s ease;
+}
+
+[data-logo-editable]:hover {
+    outline: 2px dashed var(--color-primary, #333);
+    outline-offset: 4px;
+}
+
+/* ========================================
+   EDITABLE ELEMENTS
+======================================== */
+
+/* Editable field styling */
+[data-editable="true"] {
+    position: relative;
+    transition: outline var(--transition-fast), background-color var(--transition-fast);
+}
+
+[data-editable="true"]:hover {
+    outline: 2px dashed var(--color-primary);
+    outline-offset: 4px;
+}
+
+[data-editable="true"]:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+    background-color: rgba(37, 99, 235, 0.05);
+}
+
+/* contenteditable reset */
+[contenteditable="true"] {
+    cursor: text;
+}
+
+[contenteditable="true"]:focus {
+    outline: none;
+}
+
+/* Admin-only Google Maps link editor */
+.contact-maps-link-edit {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.8em;
+    color: var(--color-text-muted, #6b7280);
+    word-break: break-all;
+}
+
+/* ========================================
+   SECTION MANAGEMENT (Eye Mode)
+======================================== */
+
+body.eye-mode-active .module {
+    position: relative;
+    height: 50px !important;
+    min-height: 50px !important;
+    max-height: 50px !important;
+    padding: 0 !important;
+    overflow: hidden;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-sm);
+    background-color: var(--color-bg);
+    cursor: grab;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+body.eye-mode-active .module:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+}
+
+body.eye-mode-active .module::before {
+    content: attr(data-module-label);
+    position: absolute;
+    top: 50%;
+    left: var(--spacing-lg);
+    transform: translateY(-50%);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-md);
+    color: var(--color-text);
+    text-transform: capitalize;
+    z-index: 10;
+}
+
+body.eye-mode-active .module > * {
+    display: none !important;
+}
+
+body.eye-mode-active .module > .module-controls {
+    display: flex !important;
+}
+
+body.eye-mode-active .module-hero {
+    height: 50px !important;
+    min-height: 50px !important;
+    max-height: 50px !important;
+}
+
+/* Module being dragged */
+body.eye-mode-active .module.module-dragging {
+    opacity: 0.4;
+    cursor: grabbing;
+}
+
+/* During drag, disable pointer events on all module children to ensure drop works */
+body.eye-mode-active .module.module-dragging * {
+    pointer-events: none;
+}
+
+/* Make sure modules can receive drop events */
+body.eye-mode-active .module {
+    pointer-events: auto;
+}
+
+/* Disable pointer events on module content during eye mode to improve drop detection */
+body.eye-mode-active .module > *:not(.module-controls) {
+    pointer-events: none;
+}
+
+/* Module drag placeholder */
+.module-placeholder {
+    border: 2px dashed var(--color-primary);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-sm);
+    background-color: rgba(37, 99, 235, 0.1);
+    height: 50px;
+}
+
+/* Module drag over state */
+body.eye-mode-active .module.drag-over {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+/* Module controls in eye mode */
+.module-controls {
+    position: absolute;
+    right: var(--spacing-lg);
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
+    gap: var(--spacing-md);
+    z-index: 10;
+}
+
+body.eye-mode-active .module-controls {
+    display: flex;
+}
+
+.module-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-muted);
+    color: var(--color-text);
+    transition: all var(--transition-fast);
+}
+
+.module-toggle-btn:hover {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+}
+
+.module-drag-handle {
+    cursor: grab;
+}
+
+.module-drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Disabled module in eye mode */
+body.eye-mode-active .module.module-disabled {
+    opacity: 0.5;
+    border-style: dashed;
+}
+
+/* ========================================
+   SAVING INDICATOR
+======================================== */
+
+.saving-indicator {
+    position: fixed;
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+    z-index: var(--z-admin);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--color-bg);
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-md);
+    font-size: var(--font-size-sm);
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all var(--transition-fast);
+}
+
+.saving-indicator.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.saving-indicator.success {
+    background-color: var(--color-success);
+    color: white;
+}
+
+.saving-indicator.error {
+    background-color: var(--color-error);
+    color: white;
+}
+
+.saving-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   TOAST NOTIFICATIONS
+======================================== */
+
+.toast-container {
+    position: fixed;
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+    z-index: var(--z-admin);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.toast {
+    padding: var(--spacing-md) var(--spacing-lg);
+    background-color: var(--color-bg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    border-left: 4px solid var(--color-primary);
+    max-width: 350px;
+    animation: slideIn 0.3s ease;
+}
+
+.toast.toast-error {
+    border-left-color: var(--color-error);
+}
+
+.toast.toast-success {
+    border-left-color: var(--color-success);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ========================================
+   IMAGE UPLOAD MODAL
+======================================== */
+
+.upload-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal-backdrop);
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-fast);
+}
+
+.upload-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.upload-modal {
+    background-color: var(--color-bg);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    max-width: 500px;
+    width: 90%;
+    box-shadow: var(--shadow-xl);
+    transform: scale(0.9);
+    transition: transform var(--transition-fast);
+}
+
+.upload-modal-overlay.active .upload-modal {
+    transform: scale(1);
+}
+
+.upload-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-lg);
+}
+
+.upload-modal-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+}
+
+.upload-modal-close {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    color: var(--color-text-muted);
+    transition: all var(--transition-fast);
+}
+
+.upload-modal-close:hover {
+    background-color: var(--color-bg-muted);
+    color: var(--color-text);
+}
+
+.upload-dropzone {
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2xl);
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.upload-dropzone:hover,
+.upload-dropzone.dragover {
+    border-color: var(--color-primary);
+    background-color: rgba(37, 99, 235, 0.05);
+}
+
+.upload-dropzone-icon {
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-md);
+}
+
+.upload-dropzone-text {
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-sm);
+}
+
+.upload-dropzone-hint {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+}
+
+/* ========================================
+   ADMIN EDIT INDICATORS
+======================================== */
+
+/* Show module label on hover */
+.module[data-module]:hover::after {
+    content: attr(data-module-label);
+    position: absolute;
+    top: var(--spacing-sm);
+    left: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* Module hover state for admin */
+body:not(.eye-mode-active) [data-module]:hover {
+    outline: 1px dashed var(--color-primary);
+    outline-offset: -1px;
+}
+
+/* Logo editable state for admin */
+[data-logo-editable] {
+    cursor: pointer;
+}
+
+[data-logo-editable]:hover {
+    outline: 2px dashed var(--primary-color, #007bff);
+    outline-offset: 4px;
+}
+
+/* Favicon button in dropdown */
+.dropdown-btn {
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: inherit;
+    color: inherit;
+}
+
+.dropdown-btn:hover {
+    background-color: #f5f5f5;
+}
+
+/* Social link admin editing */
+.social-link-admin {
+    cursor: pointer;
+    position: relative;
+}
+
+.social-link-admin::after {
+    content: '✎';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--color-primary);
+    color: white;
+    font-size: 10px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.social-link-admin:hover::after {
+    opacity: 1;
+}
+
+.social-link-admin:hover {
+    transform: scale(1.1);
+}

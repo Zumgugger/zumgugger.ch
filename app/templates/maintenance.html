@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="Wartungsarbeiten - {{ site.name }}">
+    
+    <title>Wartungsarbeiten – {{ site.name }}</title>
+    
+    <!-- Favicon -->
+    {% if config and config.favicon_image %}
+    <link rel="icon" href="{{ config.favicon_image }}">
+    {% else %}
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    {% endif %}
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/static/css/define.css?v=20260205">
+    <link rel="stylesheet" href="/static/css/base.css?v=20260205">
+    <link rel="stylesheet" href="/static/css/components.css?v=20260205">
+    
+    <!-- Theme-specific CSS variables -->
+    <style>
+        :root {
+            {% for key, value in css_variables.items() %}
+            {{ key }}: {{ value }};
+            {% endfor %}
+        }
+        
+        .maintenance-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            text-align: center;
+            background: var(--color-bg, #fff);
+        }
+        
+        .maintenance-logo {
+            max-width: 200px;
+            margin-bottom: 2rem;
+        }
+        
+        .maintenance-logo img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .maintenance-logo-text {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primary, #333);
+        }
+        
+        .maintenance-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-heading, #333);
+            margin-bottom: 1rem;
+        }
+        
+        .maintenance-message {
+            font-size: 1.25rem;
+            color: var(--color-text, #666);
+            margin-bottom: 2rem;
+            max-width: 500px;
+        }
+        
+        .maintenance-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 2rem;
+            opacity: 0.6;
+        }
+        
+        .maintenance-contact {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--color-bg-alt, #f5f5f5);
+            border-radius: 8px;
+            max-width: 400px;
+        }
+        
+        .maintenance-contact-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-heading, #333);
+            margin-bottom: 1rem;
+        }
+        
+        .maintenance-contact-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .maintenance-contact-item a {
+            color: var(--color-primary, #333);
+            text-decoration: none;
+        }
+        
+        .maintenance-contact-item a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .maintenance-title {
+                font-size: 1.75rem;
+            }
+            
+            .maintenance-message {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="theme-{{ theme }}" data-theme="{{ theme }}">
+    <main class="maintenance-container">
+        <!-- Logo -->
+        <div class="maintenance-logo">
+            {% if config and config.logo_image %}
+            <a href="/">
+                <img src="{{ config.logo_image }}" alt="{{ site.name }}">
+            </a>
+            {% else %}
+            <span class="maintenance-logo-text">{{ site.name }}</span>
+            {% endif %}
+        </div>
+        
+        <!-- Maintenance Icon -->
+        <svg class="maintenance-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        
+        <!-- Title -->
+        <h1 class="maintenance-title">Wartungsarbeiten</h1>
+        
+        <!-- Message -->
+        <p class="maintenance-message">
+            Bitte später vorbeischauen — wir sind bald wieder für Sie da.
+        </p>
+        
+        <!-- Contact Info -->
+        {% if contact_email or contact_phone %}
+        <div class="maintenance-contact">
+            <p class="maintenance-contact-title">Dringend? Kontaktieren Sie uns:</p>
+            
+            {% if contact_email %}
+            <div class="maintenance-contact-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>
+            </div>
+            {% endif %}
+            
+            {% if contact_phone %}
+            <div class="maintenance-contact-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                <a href="tel:{{ contact_phone }}">{{ contact_phone }}</a>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </main>
+</body>
+</html>

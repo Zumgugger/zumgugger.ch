@@ -1,0 +1,145 @@
+<!-- Media Module -->
+<section class="module module-media" id="media"{% if is_admin %} data-module="media" data-module-label="{{ module.title or module.type }}"{% endif %}>
+    <div class="container">
+        <h2 class="section-title"{% if is_admin %} data-nav-editable="{{ module.type }}" title="Klicken zum Bearbeiten"{% endif %}>{{ module.title }}</h2>
+        
+        <div class="media-blocks">
+            {% for block in module.data['blocks'] %}
+            <div class="media-block media-block-{{ block.type }}"{% if is_admin %} data-block-index="{{ loop.index0 }}"{% endif %}>
+                {% if block.type == "text" %}
+                <div class="media-text"{% if is_admin %} data-editable="true" data-field="media_blocks" data-subfield="content" data-index="{{ loop.index0 }}" contenteditable="true"{% endif %}>
+                    {{ block.content | safe }}
+                </div>
+                
+                {% elif block.type == "image" %}
+                <figure class="media-image"{% if is_admin %} data-field="media_blocks" data-subfield="src" data-index="{{ loop.index0 }}"{% endif %}>
+                    <img src="{{ block.src }}" alt="{{ block.alt | default('') }}" loading="lazy" class="lightbox-img" data-lightbox="media">
+                    {% if block.alt %}
+                    <figcaption>{{ block.alt }}</figcaption>
+                    {% endif %}
+                    {% if is_admin %}
+                    <button class="btn-change-image" title="Bild ändern">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </button>
+                    {% endif %}
+                </figure>
+                
+                {% elif block.type == "gallery" %}
+                <div class="media-gallery">
+                    {% for image in block.images %}
+                    <figure class="gallery-item"{% if is_admin %} data-gallery-index="{{ loop.index0 }}"{% endif %}>
+                        <img src="{{ image.src }}" alt="{{ image.alt | default('') }}" loading="lazy" class="gallery-img lightbox-img" data-lightbox="media-gallery-{{ loop.parent.loop.index0 }}">
+                        {% if is_admin %}
+                        <button class="btn-remove-item gallery-remove" data-field="media_blocks" data-block-index="{{ loop.parent.loop.index0 }}" data-image-index="{{ loop.index0 }}" title="Entfernen">×</button>
+                        {% endif %}
+                    </figure>
+                    {% endfor %}
+                    
+                    {% if is_admin %}
+                    <button class="btn-add-item gallery-add-image" data-field="media_blocks" data-block-index="{{ loop.index0 }}" title="Bild hinzufügen">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button>
+                    {% endif %}
+                </div>
+                
+                {% elif block.type == "youtube" %}
+                <div class="media-youtube" data-youtube-url="{{ block.youtube_url }}">
+                    <!-- Click-to-load placeholder with thumbnail -->
+                    <div class="youtube-placeholder" onclick="loadYouTube(this)">
+                        <div class="youtube-play-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="68" height="48" viewBox="0 0 68 48">
+                                <path class="youtube-bg" d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/>
+                                <path d="M45 24L27 14v20" fill="white"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                {% elif block.type == "audio" %}
+                <div class="media-audio" data-audio-url="{{ block.audio_url }}" data-provider="{{ block.audio_provider }}">
+                    <!-- Click-to-load placeholder -->
+                    <div class="audio-placeholder" onclick="loadAudio(this)">
+                        <div class="audio-icon">
+                            {% if block.audio_provider == "spotify" %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="#1DB954">
+                                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                            </svg>
+                            {% elif block.audio_provider == "soundcloud" %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="#ff5500">
+                                <path d="M7 17.939h-1v-8.068c.308-.231.639-.429 1-.566v8.634zm3 0h1v-9.224c-.229.265-.443.548-.621.857l-.379-.184v8.551zm2 0h1v-8.848c-.508-.079-.623-.05-1-.01v8.858zm-6 0h1v-7.02c-.312.458-.555.971-.692 1.535l-.308-.182v5.667zm-3-5.25c-.606.547-1 1.354-1 2.268 0 .914.394 1.721 1 2.268v-4.536zm18.879-.671c-.204-2.837-2.404-5.079-5.117-5.079-1.022 0-1.964.328-2.762.877v10.123h9.089c1.607 0 2.911-1.393 2.911-3.106 0-1.607-1.134-2.939-2.621-3.109l-1.5.294zm-13.879 5.921v-9.084c-.399-.025-.736.007-1 .047v9.037h1z"/>
+                            </svg>
+                            {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="5.5" cy="17.5" r="2.5"/>
+                                <circle cx="17.5" cy="15.5" r="2.5"/>
+                                <path d="M8 17V5l12-2v12"/>
+                            </svg>
+                            {% endif %}
+                        </div>
+                        <span class="audio-text">Klicken zum Laden des Audio-Players</span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if is_admin %}
+                <button class="btn-remove-block" data-field="media_blocks" data-index="{{ loop.index0 }}" title="Block entfernen">×</button>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            {% if is_admin %}
+            <div class="block-editor-add">
+                <span class="block-editor-label">Block hinzufügen:</span>
+                <button class="btn-add-block" data-field="media_blocks" data-type="text" title="Text hinzufügen">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                    <span>Text</span>
+                </button>
+                <button class="btn-add-block" data-field="media_blocks" data-type="image" title="Bild hinzufügen">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <span>Bild</span>
+                </button>
+                <button class="btn-add-block" data-field="media_blocks" data-type="gallery" title="Galerie hinzufügen">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span>Galerie</span>
+                </button>
+                <button class="btn-add-block" data-field="media_blocks" data-type="youtube" title="YouTube hinzufügen">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
+                        <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+                    </svg>
+                    <span>YouTube</span>
+                </button>
+                <button class="btn-add-block" data-field="media_blocks" data-type="audio" title="Audio hinzufügen">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="5.5" cy="17.5" r="2.5"/>
+                        <circle cx="17.5" cy="15.5" r="2.5"/>
+                        <path d="M8 17V5l12-2v12"/>
+                    </svg>
+                    <span>Audio</span>
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>

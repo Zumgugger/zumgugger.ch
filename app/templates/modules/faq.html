@@ -1,0 +1,54 @@
+<!-- FAQ Module -->
+<section class="module module-faq" id="faq"{% if is_admin %} data-module="faq" data-module-label="{{ module.title or module.type }}"{% endif %}>
+    <div class="container">
+        <h2 class="section-title"{% if is_admin %} data-nav-editable="{{ module.type }}" title="Klicken zum Bearbeiten"{% endif %}>{{ module.title }}</h2>
+        
+        <div class="faq-list">
+            {% for item in module.data['items'] %}
+            <details class="faq-item"{% if is_admin %} data-index="{{ loop.index0 }}"{% endif %}>
+                <summary class="faq-question"{% if is_admin %} data-editable="true" data-field="faq_items" data-subfield="question" data-index="{{ loop.index0 }}" contenteditable="true"{% endif %}>
+                    {{ item.question }}
+                </summary>
+                <div class="faq-answer"{% if is_admin %} data-editable="true" data-field="faq_items" data-subfield="answer" data-index="{{ loop.index0 }}" contenteditable="true"{% endif %}>
+                    {{ item.answer }}
+                </div>
+                {% if is_admin %}
+                <button class="btn-remove-item faq-remove" data-field="faq_items" data-index="{{ loop.index0 }}" title="Entfernen">×</button>
+                {% endif %}
+            </details>
+            {% endfor %}
+        </div>
+        
+        {% if is_admin %}
+        <button class="btn-add-item faq-add" data-field="faq_items" title="FAQ hinzufügen">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>FAQ hinzufügen</span>
+        </button>
+        {% endif %}
+    </div>
+    
+    <!-- FAQPage Schema -->
+    {% if module.data['items'] %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {% for item in module.data['items'] %}
+            {
+                "@type": "Question",
+                "name": "{{ item.question | e }}",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "{{ item.answer | e }}"
+                }
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ]
+    }
+    </script>
+    {% endif %}
+</section>

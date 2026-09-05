@@ -1,0 +1,64 @@
+<!-- Services/Offer Module -->
+<section class="module module-services" id="services"{% if is_admin %} data-module="services" data-module-label="{{ module.title or module.type }}"{% endif %}>
+    <div class="container">
+        <h2 class="section-title"{% if is_admin %} data-nav-editable="{{ module.type }}" title="Klicken zum Bearbeiten"{% endif %}>{{ module.title }}</h2>
+        
+        <div class="services-grid">
+            {% for service in module.data['items'] %}
+            <article class="service-card"{% if is_admin %} data-index="{{ loop.index0 }}"{% endif %}>
+                {% if service.image %}
+                <div class="service-card-image"{% if is_admin %} data-field="services" data-subfield="image" data-index="{{ loop.index0 }}"{% endif %}>
+                    <img src="{{ service.image }}" alt="{{ service.title }}" loading="lazy">
+                    {% if is_admin %}
+                    <button class="btn-change-image" title="Bild ändern">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </button>
+                    {% endif %}
+                </div>
+                {% elif service.icon %}
+                <div class="service-card-icon">
+                    {% include "icons/" + service.icon + ".svg" ignore missing %}
+                </div>
+                {% elif is_admin %}
+                <div class="service-card-image service-card-image-empty" data-field="services" data-subfield="image" data-index="{{ loop.index0 }}">
+                    <button class="btn-add-image" title="Bild hinzufügen">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                {% endif %}
+                
+                <div class="service-card-content">
+                    <h3 class="service-card-title"{% if is_admin %} data-editable="true" data-field="services" data-subfield="title" data-index="{{ loop.index0 }}" contenteditable="true"{% endif %}>
+                        {{ service.title }}
+                    </h3>
+                    <p class="service-card-description"{% if is_admin %} data-editable="true" data-field="services" data-subfield="description" data-index="{{ loop.index0 }}" contenteditable="true"{% endif %}>
+                        {{ service.description }}
+                    </p>
+                </div>
+                
+                {% if is_admin %}
+                <button class="btn-remove-item service-remove" data-field="services" data-index="{{ loop.index0 }}" title="Entfernen">×</button>
+                {% endif %}
+            </article>
+            {% endfor %}
+            
+            {% if is_admin %}
+            <button class="btn-add-item service-add" data-field="services" title="Service hinzufügen">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Service hinzufügen</span>
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</section>

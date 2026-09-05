@@ -1,0 +1,90 @@
+<!-- Trust/Proof Module -->
+<section class="module module-trust" id="trust"{% if is_admin %} data-module="trust" data-module-label="{{ module.title or module.type }}"{% endif %}>
+    <div class="container">
+        <h2 class="section-title"{% if is_admin %} data-nav-editable="{{ module.type }}" title="Klicken zum Bearbeiten"{% endif %}>{{ module.title }}</h2>
+        
+        <!-- Trust Images (logos, badges, photos) -->
+        {% if module.data.images %}
+        <div class="trust-images-grid">
+            {% for image in module.data.images %}
+            <div class="trust-image-item"{% if is_admin %} data-index="{{ loop.index0 }}"{% endif %}>
+                <img src="{{ image.src }}" alt="{{ image.alt }}" loading="lazy" class="lightbox-img" data-lightbox="trust">
+                {% if is_admin %}
+                <button class="btn-remove-item" data-field="trust_images" data-index="{{ loop.index0 }}" title="Entfernen">×</button>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            {% if is_admin %}
+            <button class="btn-add-item trust-add-image" data-field="trust_images" title="Bild hinzufügen">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+            {% endif %}
+        </div>
+        {% elif is_admin %}
+        <div class="trust-images-grid trust-images-empty">
+            <button class="btn-add-item trust-add-image" data-field="trust_images" title="Bild hinzufügen">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Bilder hinzufügen</span>
+            </button>
+        </div>
+        {% endif %}
+        
+        <!-- Testimonials -->
+        {% if module.data.testimonials %}
+        <div class="testimonials-container">
+            {% for testimonial in module.data.testimonials %}
+            <article class="testimonial-card"{% if is_admin %} data-index="{{ loop.index0 }}"{% endif %}>
+                <blockquote class="testimonial-quote"{% if is_admin %} data-editable="true" data-field="testimonials" data-subfield="quote" data-index="{{ loop.index0 }}" contenteditable="true"{% endif %}>
+                    "{{ testimonial.quote }}"
+                </blockquote>
+                <footer class="testimonial-author">
+                    <cite class="testimonial-author-name"{% if is_admin %} data-editable="true" data-field="testimonials" data-subfield="author_name" data-index="{{ loop.index0 }}" contenteditable="true"{% endif %}>
+                        {{ testimonial.author_name }}
+                    </cite>
+                    {% if testimonial.author_role %}
+                    <span class="testimonial-author-role"{% if is_admin %} data-editable="true" data-field="testimonials" data-subfield="author_role" data-index="{{ loop.index0 }}" contenteditable="true"{% endif %}>
+                        {{ testimonial.author_role }}
+                    </span>
+                    {% endif %}
+                </footer>
+                {% if is_admin %}
+                <button class="btn-remove-item" data-field="testimonials" data-index="{{ loop.index0 }}" title="Entfernen">×</button>
+                {% endif %}
+            </article>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% if is_admin %}
+        <button class="btn-add-item testimonial-add" data-field="testimonials" title="Testimonial hinzufügen">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Testimonial hinzufügen</span>
+        </button>
+        {% endif %}
+        
+        <!-- Review Source Link -->
+        {% if module.data.review_source_url and module.data.review_source_text %}
+        <div class="review-source">
+            <a href="{{ module.data.review_source_url }}" target="_blank" rel="noopener noreferrer" class="review-source-link"{% if is_admin %} data-editable="true" data-field="review_source_text" contenteditable="true"{% endif %}>
+                {{ module.data.review_source_text }}
+            </a>
+        </div>
+        {% elif is_admin %}
+        <div class="review-source review-source-empty">
+            <button class="btn-add-review-link" data-field="review_source" title="Bewertungslink hinzufügen">
+                <span>+ Bewertungslink hinzufügen</span>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</section>
