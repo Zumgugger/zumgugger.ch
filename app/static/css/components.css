@@ -166,9 +166,13 @@
 }
 
 .hero-content {
-    position: relative;
+    position: absolute;
+    inset: 0;
     z-index: 1;
     padding: var(--spacing-2xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .hero-headline {
@@ -179,25 +183,15 @@
 }
 
 .hero-cta {
+    position: absolute;
+    bottom: var(--spacing-lg);
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-block;
     font-size: var(--font-size-lg);
     padding: var(--spacing-md) var(--spacing-2xl);
-}
-
-@media (max-width: 768px) {
-    .module-hero {
-        align-items: flex-end;
-    }
-
-    .hero-content {
-        width: 100%;
-        padding-bottom: var(--spacing-lg);
-    }
-
-    .hero-cta {
-        display: inline-block;
-        background-color: var(--color-bg-dark, #1a1a1a);
-        color: var(--color-text-inverse, #ffffff);
-    }
+    background-color: var(--color-bg-dark, #1a1a1a);
+    color: var(--color-text-inverse, #ffffff);
 }
 
 .hero-image-upload {
@@ -205,6 +199,11 @@
     bottom: var(--spacing-lg);
     right: var(--spacing-lg);
     z-index: 10;
+}
+
+/* Preserve line breaks created with Shift+Enter in editable site copy. */
+.module :is(h1, h2, h3, p, blockquote, cite, summary, .contact-info-value, .faq-answer, .media-text, .review-source-link, .repertoire-title, .repertoire-year) {
+    white-space: pre-line;
 }
 
 /* ========================================

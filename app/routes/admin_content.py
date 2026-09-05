@@ -209,8 +209,9 @@ def sanitize_text(value: str) -> str:
     value = re.sub(r"<[^>]+>", "", value)
     # Escape HTML entities
     value = html.escape(value)
-    # Normalize whitespace
-    value = " ".join(value.split())
+    # Normalize spaces but preserve line breaks added with Shift+Enter.
+    value = value.replace("\r\n", "\n").replace("\r", "\n")
+    value = "\n".join(re.sub(r"[ \t\f\v]+", " ", line).strip() for line in value.split("\n"))
     return value.strip()
 
 

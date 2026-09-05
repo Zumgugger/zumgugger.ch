@@ -92,6 +92,18 @@ class TestContentUpdateEndpoint:
         content = test_db.query(SiteContent).filter(SiteContent.site_id == test_site.id).first()
         assert content.repertoire_intro == "Unsere Songs für Ihren Anlass."
 
+    def test_update_text_field_preserves_line_breaks(self, test_client_with_site: TestClient, test_db: Session, test_admin_session: AdminSession, test_site: Site):
+        """Shift+Enter line breaks remain available after an inline save."""
+        response = test_client_with_site.post(
+            "/api/admin/content",
+            json={"field": "hero_headline", "value": "Erste Zeile\nZweite Zeile"},
+            cookies={"session_token": test_admin_session.token},
+        )
+
+        assert response.status_code == 200
+        content = test_db.query(SiteContent).filter(SiteContent.site_id == test_site.id).first()
+        assert content.hero_headline == "Erste Zeile\nZweite Zeile"
+
     def test_update_records_history(self, test_client_with_site: TestClient, test_db: Session, test_admin_session: AdminSession, test_site: Site):
         """Test that content updates are recorded in history."""
         cookies = {"session_token": test_admin_session.token}

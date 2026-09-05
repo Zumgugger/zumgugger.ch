@@ -590,18 +590,16 @@
             document.execCommand('insertText', false, text);
         });
         
-        // Prevent line breaks in single-line fields. Multi-line rich-text
-        // fields (about/faq/media) keep Enter for new paragraphs.
-        const multiLineClasses = ['about-text', 'faq-answer', 'media-text'];
-        const isMultiLine = multiLineClasses.some(function(c) { return element.classList.contains(c); });
-        if (!isMultiLine) {
-            element.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    this.blur();
-                }
-            });
-        }
+        element.addEventListener('keydown', function(e) {
+            if (e.key !== 'Enter') return;
+
+            e.preventDefault();
+            if (e.shiftKey) {
+                document.execCommand('insertLineBreak', false);
+            } else {
+                this.blur();
+            }
+        });
     });
     
     // ========================================
