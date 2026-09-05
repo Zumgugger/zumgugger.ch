@@ -1360,7 +1360,10 @@
                 }
                 
                 const uploadData = await uploadResponse.json();
-                const fileUrl = uploadData.url || `/uploads/${uploadData.filename}`;
+                const fileUrl = uploadData.default_src;
+                if (!fileUrl) {
+                    throw new Error('Upload-Antwort enthält keine Bild-URL');
+                }
                 
                 // Step 2: Add block with image URL
                 await addBlockWithData(field, { type: 'image', src: fileUrl, alt: '' });

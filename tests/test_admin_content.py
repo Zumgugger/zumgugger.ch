@@ -7,6 +7,8 @@ This module tests the in-place content editing functionality:
 - Error handling
 """
 
+from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -18,6 +20,25 @@ from app.models.site import AdminUser, Site
 from app.models.site_config import SiteConfig
 from app.models.session import AdminSession
 from app.utils.auth import generate_session_token
+
+
+class TestImageBlockClientContract:
+    """Tests for the image upload response used by image blocks."""
+
+    @pytest.mark.parametrize(
+        "script_path",
+        [
+            Path(__file__).resolve().parents[1] / "app/static/js/admin.js",
+            Path(__file__).resolve().parents[2]
+            / "websitecms/site_template/app/static/js/admin.js",
+        ],
+    )
+    def test_image_block_uses_upload_default_src(self, script_path: Path):
+        """Image blocks must use the optimized URL returned by the upload API."""
+        script = script_path.read_text(encoding="utf-8")
+
+        assert "const fileUrl = uploadData.default_src;" in script
+        assert "uploadData.url ||" not in script
 
 
 class TestContentUpdateEndpoint:
