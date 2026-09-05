@@ -563,21 +563,17 @@
     const originalContent = new Map();
 
     function getEditableText(element) {
-        return element.textContent.trim();
-    }
-
-    function insertLineBreak() {
-        const selection = window.getSelection();
-        if (!selection.rangeCount) return;
-
-        const range = selection.getRangeAt(0);
-        range.deleteContents();
-        const lineBreak = document.createTextNode('\n');
-        range.insertNode(lineBreak);
-        range.setStartAfter(lineBreak);
-        range.collapse(true);
-        selection.removeAllRanges();
-        selection.addRange(range);
+        const copy = element.cloneNode(true);
+        copy.querySelectorAll('br').forEach(function(lineBreak) {
+            lineBreak.replaceWith(document.createTextNode('\n'));
+        });
+        return element.innerHTML
+            .replace(/<br\s*\/?>/gi, '\n')
+            .replace(/<div><br><\/div>/gi, '\n')
+            .replace(/<div>/gi, '\n')
+            .replace(/<\/div>/gi, '')
+            .replace(/<[^>]+>/g, '')
+            .trim();
     }
     
     document.querySelectorAll('[data-editable="true"]').forEach(function(element) {
@@ -613,7 +609,7 @@
 
             e.preventDefault();
             if (e.shiftKey) {
-                insertLineBreak();
+                document.execCommand('insertHTML', false, '<br>');
             } else {
                 this.blur();
             }
