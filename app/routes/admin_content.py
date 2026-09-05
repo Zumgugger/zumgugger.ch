@@ -125,6 +125,7 @@ FIELD_MODULE_MAP = {
     # About fields
     "about_blocks": "about",
     # Repertoire fields
+    "repertoire_intro": "repertoire",
     "repertoire_entries": "repertoire",
     # Media fields
     "media_blocks": "media",

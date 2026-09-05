@@ -80,6 +80,18 @@ class TestContentUpdateEndpoint:
         content = test_db.query(SiteContent).filter(SiteContent.site_id == test_site.id).first()
         assert content.hero_headline == "Persistierte Überschrift"
     
+    def test_update_repertoire_intro_persists(self, test_client_with_site: TestClient, test_db: Session, test_admin_session: AdminSession, test_site: Site):
+        """Test that the repertoire introduction can be updated inline."""
+        response = test_client_with_site.post(
+            "/api/admin/content",
+            json={"field": "repertoire_intro", "value": "Unsere Songs für Ihren Anlass."},
+            cookies={"session_token": test_admin_session.token},
+        )
+
+        assert response.status_code == 200
+        content = test_db.query(SiteContent).filter(SiteContent.site_id == test_site.id).first()
+        assert content.repertoire_intro == "Unsere Songs für Ihren Anlass."
+
     def test_update_records_history(self, test_client_with_site: TestClient, test_db: Session, test_admin_session: AdminSession, test_site: Site):
         """Test that content updates are recorded in history."""
         cookies = {"session_token": test_admin_session.token}

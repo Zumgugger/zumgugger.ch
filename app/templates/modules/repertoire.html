@@ -2,7 +2,7 @@
 <section class="module module-repertoire" id="repertoire"{% if is_admin %} data-module="repertoire" data-module-label="{{ module.title or module.type }}"{% endif %}>
     <div class="container">
         <h2 class="section-title"{% if is_admin %} data-nav-editable="{{ module.type }}" title="Klicken zum Bearbeiten"{% endif %}>{{ module.title }}</h2>
-        <p class="repertoire-intro">Eine Auswahl aus unserem aktuellen Repertoire. Wunschlieder besprechen wir gerne mit Ihnen.</p>
+        <p class="repertoire-intro"{% if is_admin %} contenteditable="true" data-editable="true" data-field="repertoire_intro" title="Klicken zum Bearbeiten"{% endif %}>{{ module.data.intro }}</p>
 
         {% if module.data.groups %}
         <div class="repertoire-groups">

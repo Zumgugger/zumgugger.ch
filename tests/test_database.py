@@ -19,6 +19,7 @@ from app.schema_upgrades import (
     set_schema_version,
     initialize_schema,
     upgrade_v3_to_v4,
+    upgrade_v4_to_v5,
     SCHEMA_VERSION,
 )
 
@@ -162,6 +163,24 @@ class TestSchemaVersioning:
         assert '"repertoire": "enabled"' in config.module_states
         assert config.module_order == '["about", "repertoire"]'
 
+        engine.dispose()
+
+    def test_upgrade_v4_to_v5_adds_repertoire_intro_column(self, temp_db_path):
+        """Existing repertoire databases receive editable introduction storage."""
+        engine = create_engine(
+            f"sqlite:///{temp_db_path}",
+            connect_args={"check_same_thread": False},
+        )
+
+        with engine.begin() as conn:
+            conn.execute(text("CREATE TABLE site_content (id INTEGER PRIMARY KEY, repertoire_entries JSON)"))
+
+        upgrade_v4_to_v5(engine)
+
+        with engine.connect() as conn:
+            columns = {column["name"] for column in inspect(conn).get_columns("site_content")}
+
+        assert "repertoire_intro" in columns
         engine.dispose()
 
 

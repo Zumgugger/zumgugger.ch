@@ -14,6 +14,11 @@ if TYPE_CHECKING:
     from app.models.site import Site
 
 
+DEFAULT_REPERTOIRE_INTRO = (
+    "Eine Auswahl aus unserem aktuellen Repertoire. Wunschlieder besprechen wir gerne mit Ihnen."
+)
+
+
 class SiteContent(Base, BaseMixin):
     """Model storing all content for a site.
     
@@ -46,6 +51,7 @@ class SiteContent(Base, BaseMixin):
     about_blocks: Mapped[Optional[List[Dict[str, Any]]]] = mapped_column(JSON, nullable=True, default=list)
 
     # Repertoire module - stored as ordered JSON entries
+    repertoire_intro: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     repertoire_entries: Mapped[Optional[List[Dict[str, Any]]]] = mapped_column(JSON, nullable=True, default=list)
 
     # Media module - stored as JSON array of blocks
@@ -107,6 +113,7 @@ class SiteContent(Base, BaseMixin):
                 "blocks": self.about_blocks or [],
             },
             "repertoire": {
+                "intro": self.repertoire_intro or DEFAULT_REPERTOIRE_INTRO,
                 "entries": self.repertoire_entries or [],
                 "groups": self._get_repertoire_groups(),
                 "import_text": self._get_repertoire_import_text(),

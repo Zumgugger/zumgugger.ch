@@ -20,7 +20,7 @@ from sqlalchemy.engine import Engine
 logger = logging.getLogger(__name__)
 
 # Current schema version - increment when adding upgrade functions
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 
 
 def upgrade_v1_to_v2(engine: Engine) -> None:
@@ -89,6 +89,17 @@ def upgrade_v3_to_v4(engine: Engine) -> None:
             )
 
 
+def upgrade_v4_to_v5(engine: Engine) -> None:
+    """Upgrade from schema v4 to v5 with an editable repertoire introduction."""
+    logger.info("Applying schema v5 upgrade (editable repertoire introduction)")
+
+    with engine.begin() as conn:
+        columns = {row[1] for row in conn.execute(text("PRAGMA table_info(site_content)"))}
+        if "repertoire_intro" not in columns:
+            conn.execute(text("ALTER TABLE site_content ADD COLUMN repertoire_intro VARCHAR(500)"))
+            logger.info("Added repertoire_intro column to site_content")
+
+
 # Schema version table definition
 metadata = MetaData()
 schema_version_table = Table(
@@ -105,6 +116,7 @@ UPGRADES: Dict[int, Tuple[str, Callable[[Engine], None]]] = {
     2: ("Phase 2 models: Site, AdminUser, SiteContent, SiteConfig, ContentChange", upgrade_v1_to_v2),
     3: ("Phase 15: Logo and favicon fields in SiteConfig", upgrade_v2_to_v3),
     4: ("Repertoire module", upgrade_v3_to_v4),
+    5: ("Editable repertoire introduction", upgrade_v4_to_v5),
 }
 
 
