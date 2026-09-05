@@ -8,7 +8,7 @@
             <div class="about-block about-block-{{ block.type }}"{% if is_admin %} data-block-index="{{ loop.index0 }}"{% endif %}>
                 {% if block.type == "text" %}
                 <div class="about-text"{% if is_admin %} data-editable="true" data-field="about_blocks" data-subfield="content" data-index="{{ loop.index0 }}" contenteditable="true"{% endif %}>
-                    {{ block.content | safe }}
+                    {{ block.content | linebreaks }}
                 </div>
                 
                 {% elif block.type == "image" %}

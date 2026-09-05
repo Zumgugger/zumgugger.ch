@@ -5,6 +5,7 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.attributes import flag_modified
 
 from app.models.site import Site, AdminUser
 from app.models.content import SiteContent
@@ -83,6 +84,17 @@ class TestPublicRoutes:
         assert response.status_code == 200
         assert 'id="hero"' in response.text
         assert "Ihre Band für unvergessliche Momente" in response.text
+
+    def test_home_page_renders_saved_line_breaks(self, client: TestClient, test_session: Session, site_with_content: Site):
+        """Saved inline newlines render as safe HTML breaks on the public page."""
+        content = test_session.query(SiteContent).filter_by(site_id=site_with_content.id).one()
+        content.about_blocks[0]["content"] = "Erste Zeile\nZweite Zeile"
+        flag_modified(content, "about_blocks")
+        test_session.commit()
+
+        response = client.get("/", params={"site_domain": site_with_content.domain})
+
+        assert "Erste Zeile<br>\nZweite Zeile" in response.text
     
     def test_home_page_contains_navigation(self, client: TestClient, site_with_content: Site):
         """Test that home page contains navigation."""

@@ -8,7 +8,7 @@
             <div class="media-block media-block-{{ block.type }}"{% if is_admin %} data-block-index="{{ loop.index0 }}"{% endif %}>
                 {% if block.type == "text" %}
                 <div class="media-text"{% if is_admin %} data-editable="true" data-field="media_blocks" data-subfield="content" data-index="{{ loop.index0 }}" contenteditable="true"{% endif %}>
-                    {{ block.content | safe }}
+                    {{ block.content | linebreaks }}
                 </div>
                 
                 {% elif block.type == "image" %}
