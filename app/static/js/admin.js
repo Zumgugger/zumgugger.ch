@@ -561,10 +561,28 @@
     
     // Track original content for change detection
     const originalContent = new Map();
+
+    function getEditableText(element) {
+        return element.textContent.trim();
+    }
+
+    function insertLineBreak() {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        const lineBreak = document.createTextNode('\n');
+        range.insertNode(lineBreak);
+        range.setStartAfter(lineBreak);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
     
     document.querySelectorAll('[data-editable="true"]').forEach(function(element) {
         // Store original content
-        originalContent.set(element, element.innerText.trim());
+        originalContent.set(element, getEditableText(element));
         
         // Handle focus
         element.addEventListener('focus', function() {
@@ -574,7 +592,7 @@
         // Handle blur (save on blur)
         element.addEventListener('blur', function() {
             delete this.dataset.focused;
-            const newContent = this.innerText.trim();
+            const newContent = getEditableText(this);
             const original = originalContent.get(this);
             
             if (newContent !== original) {
@@ -595,7 +613,7 @@
 
             e.preventDefault();
             if (e.shiftKey) {
-                document.execCommand('insertLineBreak', false);
+                insertLineBreak();
             } else {
                 this.blur();
             }
@@ -616,7 +634,7 @@
         showSaving();
         
         // All editable elements are contenteditable text nodes.
-        const value = element.innerText.trim();
+        const value = getEditableText(element);
         
         const payload = {
             field: field,
