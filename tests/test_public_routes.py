@@ -94,7 +94,7 @@ class TestPublicRoutes:
 
         response = client.get("/", params={"site_domain": site_with_content.domain})
 
-        assert "Erste Zeile<br>\nZweite Zeile" in response.text
+        assert "Erste Zeile<br>Zweite Zeile" in response.text
     
     def test_home_page_contains_navigation(self, client: TestClient, site_with_content: Site):
         """Test that home page contains navigation."""

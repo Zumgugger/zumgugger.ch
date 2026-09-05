@@ -30,7 +30,7 @@ templates = Jinja2Templates(directory=str(templates_path))
 
 def render_linebreaks(value: object) -> Markup:
     """Escape editable text and render only stored newline characters as breaks."""
-    return Markup("<br>\n").join(escape(str(value or "")).split("\n"))
+    return Markup("<br>").join(escape(str(value or "")).split("\n"))
 
 
 templates.env.filters["linebreaks"] = render_linebreaks
