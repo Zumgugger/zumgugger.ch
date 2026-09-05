@@ -2,7 +2,7 @@
 <section class="module module-repertoire" id="repertoire"{% if is_admin %} data-module="repertoire" data-module-label="{{ module.title or module.type }}"{% endif %}>
     <div class="container">
         <h2 class="section-title"{% if is_admin %} data-nav-editable="{{ module.type }}" title="Klicken zum Bearbeiten"{% endif %}>{{ module.title }}</h2>
-        <p class="repertoire-intro"{% if is_admin %} contenteditable="true" data-editable="true" data-field="repertoire_intro" title="Klicken zum Bearbeiten"{% endif %}>{{ module.data.intro }}</p>
+        <p class="repertoire-intro"{% if is_admin %} contenteditable="true" data-editable="true" data-field="repertoire_intro" title="Klicken zum Bearbeiten"{% endif %}>{{ module.data.intro | linebreaks }}</p>
 
         {% if module.data.groups %}
         <div class="repertoire-groups">
@@ -15,8 +15,8 @@
                 <ol class="repertoire-list">
                     {% for entry in group.entries %}
                     <li>
-                        {% if entry.year %}<span class="repertoire-year"{% if is_admin %} contenteditable="true" data-editable="true" data-field="repertoire_entries" data-subfield="year" data-index="{{ entry.index }}" title="Klicken zum Bearbeiten"{% endif %}>{{ entry.year }}</span>{% endif %}
-                        <span class="repertoire-title"{% if is_admin %} contenteditable="true" data-editable="true" data-field="repertoire_entries" data-subfield="title" data-index="{{ entry.index }}" title="Klicken zum Bearbeiten"{% endif %}>{{ entry.title }}</span>
+                        {% if entry.year %}<span class="repertoire-year"{% if is_admin %} contenteditable="true" data-editable="true" data-field="repertoire_entries" data-subfield="year" data-index="{{ entry.index }}" title="Klicken zum Bearbeiten"{% endif %}>{{ entry.year | linebreaks }}</span>{% endif %}
+                        <span class="repertoire-title"{% if is_admin %} contenteditable="true" data-editable="true" data-field="repertoire_entries" data-subfield="title" data-index="{{ entry.index }}" title="Klicken zum Bearbeiten"{% endif %}>{{ entry.title | linebreaks }}</span>
                         {% if entry.mundart %}<span class="repertoire-tag">Mundart</span>{% endif %}
                     </li>
                     {% endfor %}

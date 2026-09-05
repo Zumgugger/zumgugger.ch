@@ -12,11 +12,11 @@
     
     <div class="hero-content container">
         <h1 class="hero-headline"{% if is_admin %} data-editable="true" data-field="hero_headline" contenteditable="true"{% endif %}>
-            {{ module.data.headline | default("Willkommen") }}
+            {{ module.data.headline | default("Willkommen") | linebreaks }}
         </h1>
         
         <a href="#{{ module.data.cta_target | default('contact') }}" class="hero-cta btn btn-primary">
-            <span{% if is_admin %} data-editable="true" data-field="hero_cta_text" contenteditable="true"{% endif %}>{{ module.data.cta_text | default("Kontakt") }}</span>
+            <span{% if is_admin %} data-editable="true" data-field="hero_cta_text" contenteditable="true"{% endif %}>{{ module.data.cta_text | default("Kontakt") | linebreaks }}</span>
         </a>
     </div>
     

@@ -11,6 +11,7 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
+from markupsafe import Markup, escape
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.config import get_settings
@@ -25,6 +26,14 @@ logger = logging.getLogger(__name__)
 # Initialize Jinja2 templates
 templates_path = Path(__file__).parent / "templates"
 templates = Jinja2Templates(directory=str(templates_path))
+
+
+def render_linebreaks(value: object) -> Markup:
+    """Escape editable text and render only stored newline characters as breaks."""
+    return Markup("<br>\n").join(escape(str(value or "")).split("\n"))
+
+
+templates.env.filters["linebreaks"] = render_linebreaks
 
 # Path to site.config.json (exported from Builder)
 SITE_CONFIG_PATH = Path(__file__).parent.parent / "site.config.json"
