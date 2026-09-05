@@ -399,6 +399,109 @@
     gap: var(--spacing-md);
 }
 
+/* ========================================
+   REPERTOIRE MODULE
+======================================== */
+
+.module-repertoire {
+    padding: var(--spacing-4xl) 0;
+}
+
+.repertoire-intro,
+.repertoire-empty {
+    max-width: 720px;
+    margin: 0 auto var(--spacing-xl);
+    color: var(--color-text-light);
+    text-align: center;
+}
+
+.repertoire-groups {
+    max-width: 860px;
+    margin: 0 auto;
+    border-top: 1px solid var(--color-border);
+}
+
+.repertoire-group {
+    border-bottom: 1px solid var(--color-border);
+}
+
+.repertoire-group summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg) 0;
+    cursor: pointer;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+}
+
+.repertoire-count {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+}
+
+.repertoire-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-sm) var(--spacing-xl);
+    margin: 0;
+    padding: 0 0 var(--spacing-lg);
+    list-style: none;
+}
+
+.repertoire-list li {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-sm);
+    min-width: 0;
+}
+
+.repertoire-year {
+    flex: 0 0 3.2rem;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-variant-numeric: tabular-nums;
+}
+
+.repertoire-title {
+    overflow-wrap: anywhere;
+}
+
+.repertoire-tag {
+    color: var(--color-primary);
+    font-size: var(--font-size-xs);
+}
+
+.repertoire-import {
+    max-width: 860px;
+    margin: var(--spacing-2xl) auto 0;
+}
+
+.repertoire-import label {
+    display: block;
+    margin-bottom: var(--spacing-sm);
+    font-weight: 600;
+}
+
+.repertoire-import textarea {
+    width: 100%;
+    margin-bottom: var(--spacing-sm);
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font: inherit;
+    line-height: 1.45;
+    resize: vertical;
+}
+
+@media (max-width: 640px) {
+    .repertoire-list {
+        grid-template-columns: 1fr;
+    }
+}
+
 .gallery-item {
     position: relative;
     aspect-ratio: 1;

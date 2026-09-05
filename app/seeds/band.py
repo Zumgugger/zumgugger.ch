@@ -64,6 +64,9 @@ def get_band_seed() -> Dict[str, Any]:
                     "content": "<p>Wir sind eine leidenschaftliche Band mit jahrelanger Erfahrung. Unser Repertoire reicht von Pop und Rock über Jazz bis hin zu Klassikern, die jede Generation begeistern.</p><p>Mit professionellem Equipment und viel Herzblut sorgen wir dafür, dass Ihr Event zum unvergesslichen Erlebnis wird.</p>",
                 },
             ],
+
+            # Repertoire module
+            "repertoire_entries": [],
             
             # Media module (enabled for bands)
             "media_blocks": [
@@ -159,6 +162,7 @@ E-Mail: [E-Mail-Adresse]</p>
                 "trust": "enabled",
                 "services": "enabled",
                 "about": "enabled",
+                "repertoire": "available",
                 "media": "enabled",  # Enabled for bands
                 "faq": "available",  # Available but not enabled
                 "contact": "enabled",
@@ -169,6 +173,7 @@ E-Mail: [E-Mail-Adresse]</p>
                 "trust",
                 "services",
                 "about",
+                "repertoire",
                 "media",
                 "faq",
                 "contact",

@@ -1,0 +1,284 @@
+app/models/content.py:48: trailing whitespace.
+[32m+[m[32m    # Repertoire module - stored as ordered JSON entries[m[41m[m
+app/models/content.py:49: trailing whitespace.
+[32m+[m[32m    repertoire_entries: Mapped[Optional[List[Dict[str, Any]]]] = mapped_column(JSON, nullable=True, default=list)[m[41m[m
+app/models/content.py:50: trailing whitespace.
+[32m+[m[41m[m
+app/models/content.py:109: trailing whitespace.
+[32m+[m[32m            "repertoire": {[m[41m[m
+app/models/content.py:110: trailing whitespace.
+[32m+[m[32m                "entries": self.repertoire_entries or [],[m[41m[m
+app/models/content.py:111: trailing whitespace.
+[32m+[m[32m                "groups": self._get_repertoire_groups(),[m[41m[m
+app/models/content.py:112: trailing whitespace.
+[32m+[m[32m                "import_text": self._get_repertoire_import_text(),[m[41m[m
+app/models/content.py:113: trailing whitespace.
+[32m+[m[32m            },[m[41m[m
+app/models/content.py:134: trailing whitespace.
+[32m+[m[41m[m
+app/models/content.py:135: trailing whitespace.
+[32m+[m[32m    def _get_repertoire_groups(self) -> List[Dict[str, Any]]:[m[41m[m
+app/models/content.py:136: trailing whitespace.
+[32m+[m[32m        """Group repertoire entries in the order their decades were entered."""[m[41m[m
+app/models/content.py:137: trailing whitespace.
+[32m+[m[32m        groups: List[Dict[str, Any]] = [][m[41m[m
+app/models/content.py:138: trailing whitespace.
+[32m+[m[32m        groups_by_decade: Dict[str, Dict[str, Any]] = {}[m[41m[m
+app/models/content.py:139: trailing whitespace.
+[32m+[m[41m[m
+app/models/content.py:140: trailing whitespace.
+[32m+[m[32m        for entry in self.repertoire_entries or []:[m[41m[m
+app/models/content.py:141: trailing whitespace.
+[32m+[m[32m            decade = entry.get("decade", "Weitere Titel")[m[41m[m
+app/models/content.py:142: trailing whitespace.
+[32m+[m[32m            if decade not in groups_by_decade:[m[41m[m
+app/models/content.py:143: trailing whitespace.
+[32m+[m[32m                group = {"decade": decade, "entries": []}[m[41m[m
+app/models/content.py:144: trailing whitespace.
+[32m+[m[32m                groups_by_decade[decade] = group[m[41m[m
+app/models/content.py:145: trailing whitespace.
+[32m+[m[32m                groups.append(group)[m[41m[m
+app/models/content.py:146: trailing whitespace.
+[32m+[m[32m            groups_by_decade[decade]["entries"].append(entry)[m[41m[m
+app/models/content.py:147: trailing whitespace.
+[32m+[m[41m[m
+app/models/content.py:148: trailing whitespace.
+[32m+[m[32m        return groups[m[41m[m
+app/models/content.py:149: trailing whitespace.
+[32m+[m[41m[m
+app/models/content.py:150: trailing whitespace.
+[32m+[m[32m    def _get_repertoire_import_text(self) -> str:[m[41m[m
+app/models/content.py:151: trailing whitespace.
+[32m+[m[32m        """Serialize saved repertoire entries for the admin bulk editor."""[m[41m[m
+app/models/content.py:152: trailing whitespace.
+[32m+[m[32m        lines: List[str] = [][m[41m[m
+app/models/content.py:153: trailing whitespace.
+[32m+[m[32m        current_decade: Optional[str] = None[m[41m[m
+app/models/content.py:154: trailing whitespace.
+[32m+[m[41m[m
+app/models/content.py:155: trailing whitespace.
+[32m+[m[32m        for entry in self.repertoire_entries or []:[m[41m[m
+app/models/content.py:156: trailing whitespace.
+[32m+[m[32m            decade = entry.get("decade", "Weitere Titel")[m[41m[m
+app/models/content.py:157: trailing whitespace.
+[32m+[m[32m            if decade != current_decade:[m[41m[m
+app/models/content.py:158: trailing whitespace.
+[32m+[m[32m                if lines:[m[41m[m
+app/models/content.py:159: trailing whitespace.
+[32m+[m[32m                    lines.append("")[m[41m[m
+app/models/content.py:160: trailing whitespace.
+[32m+[m[32m                lines.append(decade)[m[41m[m
+app/models/content.py:161: trailing whitespace.
+[32m+[m[32m                current_decade = decade[m[41m[m
+app/models/content.py:162: trailing whitespace.
+[32m+[m[41m[m
+app/models/content.py:163: trailing whitespace.
+[32m+[m[32m            title = entry.get("title", "")[m[41m[m
+app/models/content.py:164: trailing whitespace.
+[32m+[m[32m            if entry.get("mundart"):[m[41m[m
+app/models/content.py:165: trailing whitespace.
+[32m+[m[32m                title = f"{title} (Mundart)"[m[41m[m
+app/models/content.py:166: trailing whitespace.
+[32m+[m[32m            year = entry.get("year", "")[m[41m[m
+app/models/content.py:167: trailing whitespace.
+[32m+[m[32m            lines.append(f"{year} {title}".strip())[m[41m[m
+app/models/content.py:168: trailing whitespace.
+[32m+[m[41m[m
+app/models/content.py:169: trailing whitespace.
+[32m+[m[32m        return "\n".join(lines)[m[41m[m
+app/models/site_config.py:26: trailing whitespace.
+[32m+[m[32m    "repertoire",[m[41m[m
+app/models/site_config.py:138: trailing whitespace.
+[32m+[m[32m            "repertoire": "Repertoire",[m[41m[m
+app/models/site_config.py:192: trailing whitespace.
+[32m+[m[32m            "repertoire": "available",[m[41m[m
+app/models/site_config.py:203: trailing whitespace.
+[32m+[m[32m            defaults["repertoire"] = "enabled"[m[41m[m
+app/schema_upgrades.py:14: trailing whitespace.
+[32m+[m[32mimport json[m[41m[m
+app/schema_upgrades.py:23: trailing whitespace.
+[32m+[m[32mSCHEMA_VERSION = 4[m[41m[m
+app/schema_upgrades.py:67: trailing whitespace.
+[32m+[m[32mdef upgrade_v3_to_v4(engine: Engine) -> None:[m[41m[m
+app/schema_upgrades.py:68: trailing whitespace.
+[32m+[m[32m    """Upgrade from schema v3 to v4 by adding the repertoire module."""[m[41m[m
+app/schema_upgrades.py:69: trailing whitespace.
+[32m+[m[32m    logger.info("Applying schema v4 upgrade (repertoire module)")[m[41m[m
+app/schema_upgrades.py:70: trailing whitespace.
+[32m+[m[32m    from app.seeds.zumgugger_repertoire import get_zumgugger_repertoire[m[41m[m
+app/schema_upgrades.py:71: trailing whitespace.
+[32m+[m[41m[m
+app/schema_upgrades.py:72: trailing whitespace.
+[32m+[m[32m    with engine.begin() as conn:[m[41m[m
+app/schema_upgrades.py:73: trailing whitespace.
+[32m+[m[32m        result = conn.execute(text("PRAGMA table_info(site_content)"))[m[41m[m
+app/schema_upgrades.py:74: trailing whitespace.
+[32m+[m[32m        columns = {row[1] for row in result.fetchall()}[m[41m[m
+app/schema_upgrades.py:75: trailing whitespace.
+[32m+[m[32m        if "repertoire_entries" not in columns:[m[41m[m
+app/schema_upgrades.py:76: trailing whitespace.
+[32m+[m[32m            conn.execute(text("ALTER TABLE site_content ADD COLUMN repertoire_entries JSON"))[m[41m[m
+app/schema_upgrades.py:77: trailing whitespace.
+[32m+[m[32m            logger.info("Added repertoire_entries column to site_content")[m[41m[m
+app/schema_upgrades.py:78: trailing whitespace.
+[32m+[m[41m[m
+app/schema_upgrades.py:79: trailing whitespace.
+[32m+[m[32m        configs = conn.execute(text("SELECT id, module_states, module_order FROM site_config")).fetchall()[m[41m[m
+app/schema_upgrades.py:80: trailing whitespace.
+[32m+[m[32m        for config_id, module_states, module_order in configs:[m[41m[m
+app/schema_upgrades.py:81: trailing whitespace.
+[32m+[m[32m            states = json.loads(module_states) if module_states else {}[m[41m[m
+app/schema_upgrades.py:82: trailing whitespace.
+[32m+[m[32m            order = json.loads(module_order) if module_order else [][m[41m[m
+app/schema_upgrades.py:83: trailing whitespace.
+[32m+[m[32m            states.setdefault("repertoire", "enabled")[m[41m[m
+app/schema_upgrades.py:84: trailing whitespace.
+[32m+[m[32m            if "repertoire" not in order:[m[41m[m
+app/schema_upgrades.py:85: trailing whitespace.
+[32m+[m[32m                insert_at = order.index("about") + 1 if "about" in order else len(order)[m[41m[m
+app/schema_upgrades.py:86: trailing whitespace.
+[32m+[m[32m                order.insert(insert_at, "repertoire")[m[41m[m
+app/schema_upgrades.py:87: trailing whitespace.
+[32m+[m[32m            conn.execute([m[41m[m
+app/schema_upgrades.py:88: trailing whitespace.
+[32m+[m[32m                text("UPDATE site_config SET module_states = :states, module_order = :order WHERE id = :id"),[m[41m[m
+app/schema_upgrades.py:89: trailing whitespace.
+[32m+[m[32m                {"id": config_id, "states": json.dumps(states), "order": json.dumps(order)},[m[41m[m
+app/schema_upgrades.py:90: trailing whitespace.
+[32m+[m[32m            )[m[41m[m
+app/schema_upgrades.py:91: trailing whitespace.
+[32m+[m[41m[m
+app/schema_upgrades.py:92: trailing whitespace.
+[32m+[m[32m        empty_repertoire = conn.execute([m[41m[m
+app/schema_upgrades.py:93: trailing whitespace.
+[32m+[m[32m            text("SELECT COUNT(*) FROM site_content WHERE repertoire_entries IS NULL OR repertoire_entries = '[]'")[m[41m[m
+app/schema_upgrades.py:94: trailing whitespace.
+[32m+[m[32m        ).scalar_one()[m[41m[m
+app/schema_upgrades.py:95: trailing whitespace.
+[32m+[m[32m        if empty_repertoire:[m[41m[m
+app/schema_upgrades.py:96: trailing whitespace.
+[32m+[m[32m            conn.execute([m[41m[m
+app/schema_upgrades.py:97: trailing whitespace.
+[32m+[m[32m                text("UPDATE site_content SET repertoire_entries = :entries WHERE repertoire_entries IS NULL OR repertoire_entries = '[]'"),[m[41m[m
+app/schema_upgrades.py:98: trailing whitespace.
+[32m+[m[32m                {"entries": json.dumps(get_zumgugger_repertoire())},[m[41m[m
+app/schema_upgrades.py:99: trailing whitespace.
+[32m+[m[32m            )[m[41m[m
+app/schema_upgrades.py:100: trailing whitespace.
+[32m+[m[32m            logger.info("Seeded initial repertoire for empty site content")[m[41m[m
+app/schema_upgrades.py:101: trailing whitespace.
+[32m+[m[41m[m
+app/schema_upgrades.py:102: trailing whitespace.
+[32m+[m[41m[m
+app/schema_upgrades.py:118: trailing whitespace.
+[32m+[m[32m    4: ("Repertoire module", upgrade_v3_to_v4),[m[41m[m
+app/seeds/band.py:67: trailing whitespace.
+[32m+[m[41m[m
+app/seeds/band.py:68: trailing whitespace.
+[32m+[m[32m            # Repertoire module[m[41m[m
+app/seeds/band.py:69: trailing whitespace.
+[32m+[m[32m            "repertoire_entries": [],[m[41m[m
+app/seeds/band.py:165: trailing whitespace.
+[32m+[m[32m                "repertoire": "available",[m[41m[m
+app/seeds/band.py:176: trailing whitespace.
+[32m+[m[32m                "repertoire",[m[41m[m
+tests/test_database.py:21: trailing whitespace.
+[32m+[m[32m    upgrade_v3_to_v4,[m[41m[m
+tests/test_database.py:143: trailing whitespace.
+[32m+[m[32m    def test_upgrade_v3_to_v4_adds_repertoire_column(self, temp_db_path):[m[41m[m
+tests/test_database.py:144: trailing whitespace.
+[32m+[m[32m        """Existing databases receive repertoire storage and module configuration."""[m[41m[m
+tests/test_database.py:145: trailing whitespace.
+[32m+[m[32m        engine = create_engine([m[41m[m
+tests/test_database.py:146: trailing whitespace.
+[32m+[m[32m            f"sqlite:///{temp_db_path}",[m[41m[m
+tests/test_database.py:147: trailing whitespace.
+[32m+[m[32m            connect_args={"check_same_thread": False},[m[41m[m
+tests/test_database.py:148: trailing whitespace.
+[32m+[m[32m        )[m[41m[m
+tests/test_database.py:149: trailing whitespace.
+[32m+[m[41m[m
+tests/test_database.py:150: trailing whitespace.
+[32m+[m[32m        with engine.begin() as conn:[m[41m[m
+tests/test_database.py:151: trailing whitespace.
+[32m+[m[32m            conn.execute(text("CREATE TABLE site_content (id INTEGER PRIMARY KEY)"))[m[41m[m
+tests/test_database.py:152: trailing whitespace.
+[32m+[m[32m            conn.execute(text("CREATE TABLE site_config (id INTEGER PRIMARY KEY, site_id INTEGER, theme_name TEXT, module_states JSON, module_order JSON)"))[m[41m[m
+tests/test_database.py:153: trailing whitespace.
+[32m+[m[32m            conn.execute(text("INSERT INTO site_config (site_id, theme_name, module_states, module_order) VALUES (1, 'clean', '{\"about\": \"enabled\"}', '[\"about\"]')"))[m[41m[m
+tests/test_database.py:154: trailing whitespace.
+[32m+[m[32m            conn.execute(text("INSERT INTO site_content (id) VALUES (1)"))[m[41m[m
+tests/test_database.py:155: trailing whitespace.
+[32m+[m[41m[m
+tests/test_database.py:156: trailing whitespace.
+[32m+[m[32m        upgrade_v3_to_v4(engine)[m[41m[m
+tests/test_database.py:157: trailing whitespace.
+[32m+[m[41m[m
+tests/test_database.py:158: trailing whitespace.
+[32m+[m[32m        with engine.connect() as conn:[m[41m[m
+tests/test_database.py:159: trailing whitespace.
+[32m+[m[32m            columns = {column["name"] for column in inspect(conn).get_columns("site_content")}[m[41m[m
+tests/test_database.py:160: trailing whitespace.
+[32m+[m[32m            config = conn.execute(text("SELECT module_states, module_order FROM site_config WHERE site_id = 1")).one()[m[41m[m
+tests/test_database.py:161: trailing whitespace.
+[32m+[m[32m            entries = json.loads(conn.execute(text("SELECT repertoire_entries FROM site_content WHERE id = 1")).scalar_one())[m[41m[m
+tests/test_database.py:162: trailing whitespace.
+[32m+[m[41m[m
+tests/test_database.py:163: trailing whitespace.
+[32m+[m[32m        assert "repertoire_entries" in columns[m[41m[m
+tests/test_database.py:164: trailing whitespace.
+[32m+[m[32m        assert '"repertoire": "enabled"' in config.module_states[m[41m[m
+tests/test_database.py:165: trailing whitespace.
+[32m+[m[32m        assert config.module_order == '["about", "repertoire"]'[m[41m[m
+tests/test_database.py:166: trailing whitespace.
+[32m+[m[32m        assert entries[0]["title"] == "Irish Rover"[m[41m[m
+tests/test_database.py:167: trailing whitespace.
+[32m+[m[32m        assert entries[-1]["title"] == "Señorita"[m[41m[m
+tests/test_database.py:168: trailing whitespace.
+[32m+[m[41m[m
+tests/test_database.py:169: trailing whitespace.
+[32m+[m[32m        engine.dispose()[m[41m[m
+tests/test_database.py:170: trailing whitespace.
+[32m+[m[41m[m
+tests/test_models_content.py:97: trailing whitespace.
+[32m+[m[32m    def test_repertoire_groups_preserve_entered_decade_order(self, db_session: Session, site: Site):[m[41m[m
+tests/test_models_content.py:98: trailing whitespace.
+[32m+[m[32m        """Repertoire groups keep the artist's decade order for display."""[m[41m[m
+tests/test_models_content.py:99: trailing whitespace.
+[32m+[m[32m        content = SiteContent([m[41m[m
+tests/test_models_content.py:100: trailing whitespace.
+[32m+[m[32m            site_id=site.id,[m[41m[m
+tests/test_models_content.py:101: trailing whitespace.
+[32m+[m[32m            repertoire_entries=[[m[41m[m
+tests/test_models_content.py:102: trailing whitespace.
+[32m+[m[32m                {"decade": "Irish", "year": "", "title": "Rover", "mundart": False},[m[41m[m
+tests/test_models_content.py:103: trailing whitespace.
+[32m+[m[32m                {"decade": "80er", "year": "1982", "title": "Africa", "mundart": False},[m[41m[m
+tests/test_models_content.py:104: trailing whitespace.
+[32m+[m[32m                {"decade": "Irish", "year": "1984", "title": "Streams of Whiskey", "mundart": False},[m[41m[m
+tests/test_models_content.py:105: trailing whitespace.
+[32m+[m[32m            ],[m[41m[m
+tests/test_models_content.py:106: trailing whitespace.
+[32m+[m[32m        )[m[41m[m
+tests/test_models_content.py:107: trailing whitespace.
+[32m+[m[32m        db_session.add(content)[m[41m[m
+tests/test_models_content.py:108: trailing whitespace.
+[32m+[m[32m        db_session.commit()[m[41m[m
+tests/test_models_content.py:109: trailing whitespace.
+[32m+[m[41m[m
+tests/test_models_content.py:110: trailing whitespace.
+[32m+[m[32m        groups = content.get_module_data("repertoire")["groups"][m[41m[m
+tests/test_models_content.py:111: trailing whitespace.
+[32m+[m[41m[m
+tests/test_models_content.py:112: trailing whitespace.
+[32m+[m[32m        assert [group["decade"] for group in groups] == ["Irish", "80er"][m[41m[m
+tests/test_models_content.py:113: trailing whitespace.
+[32m+[m[32m        assert [entry["title"] for entry in groups[0]["entries"]] == ["Rover", "Streams of Whiskey"][m[41m[m
+tests/test_models_content.py:114: trailing whitespace.
+[32m+[m[32m        assert content.get_module_data("repertoire")["import_text"] == ([m[41m[m
+tests/test_models_content.py:115: trailing whitespace.
+[32m+[m[32m            "Irish\nRover\n\n80er\n1982 Africa\n\nIrish\n1984 Streams of Whiskey"[m[41m[m
+tests/test_models_content.py:116: trailing whitespace.
+[32m+[m[32m        )[m[41m[m
+tests/test_models_content.py:117: trailing whitespace.
+[32m+[m[41m[m

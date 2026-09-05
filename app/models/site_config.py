@@ -23,6 +23,7 @@ DEFAULT_MODULE_ORDER = [
     "trust",
     "services",
     "about",
+    "repertoire",
     "media",
     "faq",
     "contact",
@@ -134,6 +135,7 @@ class SiteConfig(Base, BaseMixin):
             "trust": "Referenzen",
             "services": "Angebot",
             "about": "Über mich",
+            "repertoire": "Repertoire",
             "media": "Medien",
             "faq": "FAQ",
             "contact": "Kontakt",
@@ -187,6 +189,7 @@ class SiteConfig(Base, BaseMixin):
             "trust": "enabled",
             "services": "enabled",
             "about": "enabled",
+            "repertoire": "available",
             "media": "available",  # Off by default
             "faq": "available",    # Off by default
             "contact": "enabled",
@@ -197,6 +200,7 @@ class SiteConfig(Base, BaseMixin):
         if site_type == "band":
             defaults["media"] = "enabled"  # Bands need media
             defaults["faq"] = "available"
+            defaults["repertoire"] = "enabled"
         elif site_type == "rolfing":
             defaults["media"] = "available"
             defaults["faq"] = "enabled"  # Rolfing benefits from FAQ

@@ -124,6 +124,8 @@ FIELD_MODULE_MAP = {
     "services": "services",
     # About fields
     "about_blocks": "about",
+    # Repertoire fields
+    "repertoire_entries": "repertoire",
     # Media fields
     "media_blocks": "media",
     # FAQ fields
@@ -146,6 +148,7 @@ ARRAY_FIELDS = {
     "testimonials",
     "trust_images",
     "about_blocks",
+    "repertoire_entries",
     "media_blocks",
     "faq_items",
     "footer_social_links",

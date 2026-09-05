@@ -45,6 +45,9 @@ class SiteContent(Base, BaseMixin):
     # About module - stored as JSON array of blocks
     about_blocks: Mapped[Optional[List[Dict[str, Any]]]] = mapped_column(JSON, nullable=True, default=list)
 
+    # Repertoire module - stored as ordered JSON entries
+    repertoire_entries: Mapped[Optional[List[Dict[str, Any]]]] = mapped_column(JSON, nullable=True, default=list)
+
     # Media module - stored as JSON array of blocks
     media_blocks: Mapped[Optional[List[Dict[str, Any]]]] = mapped_column(JSON, nullable=True, default=list)
 
@@ -103,6 +106,11 @@ class SiteContent(Base, BaseMixin):
             "about": {
                 "blocks": self.about_blocks or [],
             },
+            "repertoire": {
+                "entries": self.repertoire_entries or [],
+                "groups": self._get_repertoire_groups(),
+                "import_text": self._get_repertoire_import_text(),
+            },
             "media": {
                 "blocks": self.media_blocks or [],
             },
@@ -123,3 +131,39 @@ class SiteContent(Base, BaseMixin):
             },
         }
         return module_data.get(module_type, {})
+
+    def _get_repertoire_groups(self) -> List[Dict[str, Any]]:
+        """Group repertoire entries in the order their decades were entered."""
+        groups: List[Dict[str, Any]] = []
+        groups_by_decade: Dict[str, Dict[str, Any]] = {}
+
+        for entry in self.repertoire_entries or []:
+            decade = entry.get("decade", "Weitere Titel")
+            if decade not in groups_by_decade:
+                group = {"decade": decade, "entries": []}
+                groups_by_decade[decade] = group
+                groups.append(group)
+            groups_by_decade[decade]["entries"].append(entry)
+
+        return groups
+
+    def _get_repertoire_import_text(self) -> str:
+        """Serialize saved repertoire entries for the admin bulk editor."""
+        lines: List[str] = []
+        current_decade: Optional[str] = None
+
+        for entry in self.repertoire_entries or []:
+            decade = entry.get("decade", "Weitere Titel")
+            if decade != current_decade:
+                if lines:
+                    lines.append("")
+                lines.append(decade)
+                current_decade = decade
+
+            title = entry.get("title", "")
+            if entry.get("mundart"):
+                title = f"{title} (Mundart)"
+            year = entry.get("year", "")
+            lines.append(f"{year} {title}".strip())
+
+        return "\n".join(lines)

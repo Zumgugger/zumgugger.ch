@@ -94,6 +94,27 @@ class TestSiteContentModel:
         assert content.services == services
         assert content.testimonials == testimonials
 
+    def test_repertoire_groups_preserve_entered_decade_order(self, db_session: Session, site: Site):
+        """Repertoire groups keep the artist's decade order for display."""
+        content = SiteContent(
+            site_id=site.id,
+            repertoire_entries=[
+                {"decade": "Irish", "year": "", "title": "Rover", "mundart": False},
+                {"decade": "80er", "year": "1982", "title": "Africa", "mundart": False},
+                {"decade": "Irish", "year": "1984", "title": "Streams of Whiskey", "mundart": False},
+            ],
+        )
+        db_session.add(content)
+        db_session.commit()
+
+        groups = content.get_module_data("repertoire")["groups"]
+
+        assert [group["decade"] for group in groups] == ["Irish", "80er"]
+        assert [entry["title"] for entry in groups[0]["entries"]] == ["Rover", "Streams of Whiskey"]
+        assert content.get_module_data("repertoire")["import_text"] == (
+            "Irish\nRover\n\n80er\n1982 Africa\n\nIrish\n1984 Streams of Whiskey"
+        )
+
     def test_unique_site_id(self, db_session: Session, site: Site):
         """Test that site_id is unique (one content per site)."""
         content1 = SiteContent(site_id=site.id, hero_headline="First")

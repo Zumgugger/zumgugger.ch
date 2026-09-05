@@ -11,6 +11,7 @@ Rationale:
 from __future__ import annotations
 
 import logging
+import json
 from typing import Callable, Dict, Tuple
 
 from sqlalchemy import Column, Integer, String, Table, MetaData, text
@@ -19,7 +20,7 @@ from sqlalchemy.engine import Engine
 logger = logging.getLogger(__name__)
 
 # Current schema version - increment when adding upgrade functions
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 
 def upgrade_v1_to_v2(engine: Engine) -> None:
@@ -63,6 +64,31 @@ def upgrade_v2_to_v3(engine: Engine) -> None:
             logger.info("Added favicon_image column to site_config")
 
 
+def upgrade_v3_to_v4(engine: Engine) -> None:
+    """Upgrade from schema v3 to v4 by adding the repertoire module."""
+    logger.info("Applying schema v4 upgrade (repertoire module)")
+
+    with engine.begin() as conn:
+        result = conn.execute(text("PRAGMA table_info(site_content)"))
+        columns = {row[1] for row in result.fetchall()}
+        if "repertoire_entries" not in columns:
+            conn.execute(text("ALTER TABLE site_content ADD COLUMN repertoire_entries JSON"))
+            logger.info("Added repertoire_entries column to site_content")
+
+        configs = conn.execute(text("SELECT id, module_states, module_order FROM site_config")).fetchall()
+        for config_id, module_states, module_order in configs:
+            states = json.loads(module_states) if module_states else {}
+            order = json.loads(module_order) if module_order else []
+            states.setdefault("repertoire", "enabled")
+            if "repertoire" not in order:
+                insert_at = order.index("about") + 1 if "about" in order else len(order)
+                order.insert(insert_at, "repertoire")
+            conn.execute(
+                text("UPDATE site_config SET module_states = :states, module_order = :order WHERE id = :id"),
+                {"id": config_id, "states": json.dumps(states), "order": json.dumps(order)},
+            )
+
+
 # Schema version table definition
 metadata = MetaData()
 schema_version_table = Table(
@@ -78,6 +104,7 @@ schema_version_table = Table(
 UPGRADES: Dict[int, Tuple[str, Callable[[Engine], None]]] = {
     2: ("Phase 2 models: Site, AdminUser, SiteContent, SiteConfig, ContentChange", upgrade_v1_to_v2),
     3: ("Phase 15: Logo and favicon fields in SiteConfig", upgrade_v2_to_v3),
+    4: ("Repertoire module", upgrade_v3_to_v4),
 }
 
 

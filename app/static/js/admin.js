@@ -648,6 +648,90 @@
             showSaveError('Netzwerkfehler');
         }
     }
+
+    function parseRepertoire(text) {
+        const entries = [];
+        let decade = '';
+        let pendingYear = '';
+        let canContinueTitle = false;
+
+        for (const rawLine of text.split(/\r?\n/)) {
+            const line = rawLine.replace(/\*+/g, '').trim();
+            if (!line) {
+                canContinueTitle = false;
+                continue;
+            }
+
+            const songMatch = line.match(/^(\d{4})\s+(.+)$/);
+            if (songMatch) {
+                entries.push(createRepertoireEntry(decade, songMatch[1], songMatch[2]));
+                pendingYear = '';
+                canContinueTitle = true;
+            } else if (/^\d{4}$/.test(line)) {
+                pendingYear = line;
+                canContinueTitle = false;
+            } else if (pendingYear) {
+                entries.push(createRepertoireEntry(decade, pendingYear, line));
+                pendingYear = '';
+                canContinueTitle = true;
+            } else if (!decade || /^(Irish|\d{2}er|\d{4}er)$/i.test(line)) {
+                decade = line;
+                canContinueTitle = false;
+            } else if (canContinueTitle && entries.length && entries[entries.length - 1].decade === decade) {
+                const previousEntry = entries[entries.length - 1];
+                previousEntry.title = `${previousEntry.title} ${line}`;
+                if (/\(Mundart\)/i.test(previousEntry.title)) {
+                    previousEntry.mundart = true;
+                    previousEntry.title = previousEntry.title.replace(/\(Mundart\)/gi, '').trim();
+                }
+            } else {
+                entries.push(createRepertoireEntry(decade, '', line));
+                canContinueTitle = true;
+            }
+        }
+
+        return entries;
+    }
+
+    function createRepertoireEntry(decade, year, rawTitle) {
+        const mundart = /\(Mundart\)/i.test(rawTitle);
+        return {
+            decade: decade || 'Weitere Titel',
+            year: year,
+            title: rawTitle.replace(/\(Mundart\)/gi, '').trim(),
+            mundart: mundart,
+        };
+    }
+
+    const repertoireImportSave = document.getElementById('repertoire-import-save');
+    if (repertoireImportSave) {
+        repertoireImportSave.addEventListener('click', async function() {
+            const input = document.getElementById('repertoire-import-input');
+            const entries = parseRepertoire(input.value);
+            if (!entries.length) {
+                showSaveError('Bitte mindestens einen Song eingeben');
+                return;
+            }
+
+            showSaving();
+            try {
+                const response = await fetch('/api/admin/content', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ field: 'repertoire_entries', value: entries }),
+                });
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.message || data.detail?.message || 'Speichern fehlgeschlagen');
+                }
+                showSaveSuccess();
+                setTimeout(() => window.location.reload(), 500);
+            } catch (error) {
+                showSaveError(error.message || 'Netzwerkfehler');
+            }
+        });
+    }
     
     // ========================================
     // Saving Indicator
