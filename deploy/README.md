@@ -80,6 +80,7 @@ sudo nano .env  # Edit configuration
 # Set permissions
 sudo chown -R root:www-data /var/www/${SITENAME}
 sudo chmod -R 755 /var/www/${SITENAME}
+sudo chown -R 1000:1000 /var/www/${SITENAME}/data
 sudo chmod -R 775 /var/www/${SITENAME}/data
 ```
 

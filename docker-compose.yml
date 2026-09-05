@@ -4,9 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: production
-    container_name: websitecms
     ports:
-      - "127.0.0.1:30000:8002"
+      - "127.0.0.1:${APP_PORT:-30000}:8002"
     volumes:
       - ./data:/app/data
     environment:

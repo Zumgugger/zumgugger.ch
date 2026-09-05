@@ -40,7 +40,7 @@ get_used_ports() {
         sort -n | uniq
     
     # Also check .env files in /var/www/*/
-    for env_file in /var/www/*/.env 2>/dev/null; do
+    for env_file in /var/www/*/.env; do
         if [[ -f "$env_file" ]]; then
             grep -oP "^APP_PORT=\K[0-9]+" "$env_file" 2>/dev/null
         fi

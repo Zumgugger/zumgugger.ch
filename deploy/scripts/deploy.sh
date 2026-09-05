@@ -140,13 +140,18 @@ sed -i "s/^SECRET_KEY=.*/SECRET_KEY=$SECRET_KEY/" "$SITE_DIR/.env"
 sed -i "s/^DEBUG=.*/DEBUG=false/" "$SITE_DIR/.env"
 sed -i "s/^LOG_LEVEL=.*/LOG_LEVEL=WARNING/" "$SITE_DIR/.env"
 
-# Add APP_PORT to .env
-echo "APP_PORT=$PORT" >> "$SITE_DIR/.env"
+# Set APP_PORT in .env without creating duplicate entries.
+if grep -q "^APP_PORT=" "$SITE_DIR/.env"; then
+    sed -i "s/^APP_PORT=.*/APP_PORT=$PORT/" "$SITE_DIR/.env"
+else
+    echo "APP_PORT=$PORT" >> "$SITE_DIR/.env"
+fi
 
 # Step 6: Set permissions
 log_info "Setting permissions..."
 chown -R root:www-data "$SITE_DIR"
 chmod -R 755 "$SITE_DIR"
+chown -R 1000:1000 "$SITE_DIR/data"
 chmod -R 775 "$SITE_DIR/data"
 chmod 600 "$SITE_DIR/.env"
 
