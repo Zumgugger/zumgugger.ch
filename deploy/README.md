@@ -45,6 +45,38 @@ sudo ./deploy/scripts/deploy.sh --domain example.com --sitename mysite
 sudo ./deploy/scripts/deploy.sh --domain example.com --sitename mysite --port 30001
 ```
 
+## Git-Backed Updates
+
+Production sites should be deployed from their Git repository so code updates do
+not require copying a temporary checkout into `/var/www`. Runtime state remains
+outside Git in `data/` and `.env`.
+
+### Adopt an Existing Copied Deployment
+
+For a site that was originally copied from a temporary checkout, first clone the
+current repository somewhere safe (for example `/tmp/zumgugger-release`) and run:
+
+```bash
+sudo /tmp/zumgugger-release/deploy/scripts/adopt-git-repository.sh \
+    --sitename zumgugger \
+    --repository https://github.com/Zumgugger/zumgugger.ch.git \
+    --branch master
+```
+
+The script creates a timestamped backup in `/var/www`, preserves the site's
+`data/` and `.env`, and installs the repository including `.git` into the live
+directory.
+
+### Update a Git-Backed Site
+
+```bash
+sudo /var/www/zumgugger/deploy/scripts/update.sh zumgugger
+curl http://127.0.0.1:30001/health
+```
+
+`update.sh` rejects tracked local changes, uses `git pull --ff-only`, fixes the
+writable data ownership, and rebuilds the container.
+
 ## Manual Deployment Steps
 
 ### 1. Prepare the Server
