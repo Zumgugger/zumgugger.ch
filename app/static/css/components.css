@@ -183,6 +183,23 @@
     padding: var(--spacing-md) var(--spacing-2xl);
 }
 
+@media (max-width: 768px) {
+    .module-hero {
+        align-items: flex-end;
+    }
+
+    .hero-content {
+        width: 100%;
+        padding-bottom: var(--spacing-lg);
+    }
+
+    .hero-cta {
+        display: inline-block;
+        background-color: var(--color-bg-dark, #1a1a1a);
+        color: var(--color-text-inverse, #ffffff);
+    }
+}
+
 .hero-image-upload {
     position: absolute;
     bottom: var(--spacing-lg);
