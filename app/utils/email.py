@@ -204,7 +204,7 @@ IP-Adresse: {ip_address}
 <head>
     <meta charset="utf-8">
     <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }}
+        body {{ font-family: Arial, 'Helvetica Neue', sans-serif; line-height: 1.6; color: #333; }}
         .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
         h1 {{ color: #2c3e50; font-size: 24px; margin-bottom: 20px; }}
         .field {{ margin-bottom: 15px; }}

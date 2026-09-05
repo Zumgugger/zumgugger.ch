@@ -39,13 +39,11 @@
     {% endif %}
     
     <!-- Theme-specific CSS variables -->
-    <style>
-        :root {
-            {% for key, value in css_variables.items() %}
-            {{ key }}: {{ value }};
-            {% endfor %}
+    <script>
+        for (const [name, value] of Object.entries({{ css_variables | tojson }})) {
+            document.documentElement.style.setProperty(name, value);
         }
-    </style>
+    </script>
     
     <!-- Schema.org structured data -->
     {% block schema_org %}
