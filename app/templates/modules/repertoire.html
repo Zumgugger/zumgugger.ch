@@ -15,8 +15,8 @@
                 <ol class="repertoire-list">
                     {% for entry in group.entries %}
                     <li>
-                        {% if entry.year %}<span class="repertoire-year">{{ entry.year }}</span>{% endif %}
-                        <span class="repertoire-title">{{ entry.title }}</span>
+                        {% if entry.year %}<span class="repertoire-year"{% if is_admin %} contenteditable="true" data-editable="true" data-field="repertoire_entries" data-subfield="year" data-index="{{ entry.index }}" title="Klicken zum Bearbeiten"{% endif %}>{{ entry.year }}</span>{% endif %}
+                        <span class="repertoire-title"{% if is_admin %} contenteditable="true" data-editable="true" data-field="repertoire_entries" data-subfield="title" data-index="{{ entry.index }}" title="Klicken zum Bearbeiten"{% endif %}>{{ entry.title }}</span>
                         {% if entry.mundart %}<span class="repertoire-tag">Mundart</span>{% endif %}
                     </li>
                     {% endfor %}

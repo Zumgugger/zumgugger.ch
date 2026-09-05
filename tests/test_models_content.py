@@ -111,6 +111,8 @@ class TestSiteContentModel:
 
         assert [group["decade"] for group in groups] == ["Irish", "80er"]
         assert [entry["title"] for entry in groups[0]["entries"]] == ["Rover", "Streams of Whiskey"]
+        assert [entry["index"] for entry in groups[0]["entries"]] == [0, 2]
+        assert groups[1]["entries"][0]["index"] == 1
         assert content.get_module_data("repertoire")["import_text"] == (
             "Irish\nRover\n\n80er\n1982 Africa\n\nIrish\n1984 Streams of Whiskey"
         )

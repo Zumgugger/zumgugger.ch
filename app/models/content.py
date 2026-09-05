@@ -137,13 +137,15 @@ class SiteContent(Base, BaseMixin):
         groups: List[Dict[str, Any]] = []
         groups_by_decade: Dict[str, Dict[str, Any]] = {}
 
-        for entry in self.repertoire_entries or []:
+        for index, entry in enumerate(self.repertoire_entries or []):
             decade = entry.get("decade", "Weitere Titel")
             if decade not in groups_by_decade:
                 group = {"decade": decade, "entries": []}
                 groups_by_decade[decade] = group
                 groups.append(group)
-            groups_by_decade[decade]["entries"].append(entry)
+            display_entry = dict(entry)
+            display_entry["index"] = index
+            groups_by_decade[decade]["entries"].append(display_entry)
 
         return groups
 
