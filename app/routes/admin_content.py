@@ -205,6 +205,8 @@ def sanitize_text(value: str) -> str:
     Returns:
         Sanitized text with HTML entities escaped.
     """
+    # Decode browser entities (for example &nbsp;) before escaping for storage.
+    value = html.unescape(value).replace("\xa0", " ")
     # Strip any HTML tags
     value = re.sub(r"<[^>]+>", "", value)
     # Escape HTML entities

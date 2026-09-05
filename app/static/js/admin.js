@@ -567,12 +567,8 @@
         copy.querySelectorAll('br').forEach(function(lineBreak) {
             lineBreak.replaceWith(document.createTextNode('\n'));
         });
-        return element.innerHTML
-            .replace(/<br\s*\/?>/gi, '\n')
-            .replace(/<div><br><\/div>/gi, '\n')
-            .replace(/<div>/gi, '\n')
-            .replace(/<\/div>/gi, '')
-            .replace(/<[^>]+>/g, '')
+        return copy.textContent
+            .replace(/\u00a0/g, ' ')
             .trim();
     }
     
