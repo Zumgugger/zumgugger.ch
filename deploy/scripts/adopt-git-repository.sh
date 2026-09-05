@@ -61,7 +61,8 @@ git clone --branch "$BRANCH" --single-branch "$REPOSITORY" "$STAGING_DIR/reposit
 echo "Stopping the current container"
 (
     cd "$SITE_DIR"
-    docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+    COMPOSE_PROJECT_NAME="websitecms-${SITENAME}" \
+        docker compose -f docker-compose.yml -f docker-compose.prod.yml down
 )
 
 echo "Installing tracked application files while preserving data/ and .env"
@@ -74,7 +75,8 @@ chown -R 1000:1000 "$SITE_DIR/data"
 echo "Starting the Git-backed deployment"
 (
     cd "$SITE_DIR"
-    docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+    COMPOSE_PROJECT_NAME="websitecms-${SITENAME}" \
+        docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 )
 
 echo "Migration complete. Live state backup: $BACKUP_DIR/live-state.tar.gz"

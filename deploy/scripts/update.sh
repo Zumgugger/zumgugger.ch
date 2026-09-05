@@ -34,7 +34,8 @@ chown -R 1000:1000 "$SITE_DIR/data"
 
 (
     cd "$SITE_DIR"
-    docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+    COMPOSE_PROJECT_NAME="websitecms-${SITENAME}" \
+        docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 )
 
 APP_PORT=$(grep -E '^APP_PORT=' "$SITE_DIR/.env" 2>/dev/null | tail -n 1 | cut -d= -f2-)
