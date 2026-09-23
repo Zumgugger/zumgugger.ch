@@ -60,6 +60,9 @@ class SiteContent(Base, BaseMixin):
     # FAQ module - stored as JSON array
     faq_items: Mapped[Optional[List[Dict[str, Any]]]] = mapped_column(JSON, nullable=True, default=list)
 
+    # Concerts module - stored as JSON array
+    concerts_items: Mapped[Optional[List[Dict[str, Any]]]] = mapped_column(JSON, nullable=True, default=list)
+
     # Contact module
     contact_phone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # E.164 format
     contact_email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
@@ -123,6 +126,9 @@ class SiteContent(Base, BaseMixin):
             },
             "faq": {
                 "items": self.faq_items or [],
+            },
+            "concerts": {
+                "items": self.concerts_items or [],
             },
             "contact": {
                 "phone": self.contact_phone,

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konzerte verwalten - {{ site.name }}</title>
+    <link rel="stylesheet" href="/static/css/define.css">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <style>
+        .concert-admin { max-width: 960px; margin: 0 auto; padding: 2rem var(--container-padding); }
+        .concert-admin-header { display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:2rem; }
+        .concert-admin h1 { font-size:var(--font-size-3xl); }
+        .concert-settings, .concert-form, .concert-admin-list { border-top:1px solid var(--color-border); padding:1.5rem 0; }
+        .concert-form-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:1rem; }
+        .concert-field { display:flex; flex-direction:column; gap:.4rem; }
+        .concert-field-wide { grid-column:1 / -1; }
+        .concert-field input, .concert-field textarea, .concert-field select { width:100%; padding:.7rem; border:1px solid var(--color-border); border-radius:var(--radius-sm); background:var(--color-bg); color:var(--color-text); }
+        .concert-checkbox { flex-direction:row; align-items:center; }
+        .concert-form-actions, .concert-row-actions { display:flex; gap:.75rem; align-items:center; flex-wrap:wrap; }
+        .concert-admin-item { display:grid; grid-template-columns:100px 1fr auto; gap:1rem; align-items:center; padding:1rem 0; border-bottom:1px solid var(--color-border); }
+        .concert-admin-image { width:100px; height:67px; object-fit:contain; background:var(--color-bg-muted); }
+        .concert-admin-meta { color:var(--color-text-muted); font-size:var(--font-size-sm); }
+        .status-private { color:var(--color-text-muted); }
+        .upload-hint { color:var(--color-text-muted); font-size:var(--font-size-sm); }
+        @media (max-width: 680px) { .concert-form-grid { grid-template-columns:1fr; } .concert-field-wide { grid-column:auto; } .concert-admin-header, .concert-admin-item { align-items:flex-start; } .concert-admin-item { grid-template-columns:72px 1fr; } .concert-row-actions { grid-column:1 / -1; } .concert-admin-image { width:72px; height:48px; } }
+    </style>
+</head>
+<body>
+    <main class="concert-admin">
+        <header class="concert-admin-header">
+            <div><a href="/" class="back-link">Zur Website</a><h1>Konzerte</h1></div>
+            <a class="btn btn-secondary" href="/">Fertig</a>
+        </header>
+        <section class="concert-settings">
+            <div class="concert-field">
+                <label for="display-limit">Kommende Konzerte auf der Website</label>
+                <select id="display-limit">{% for number in range(1, 25) %}<option value="{{ number }}"{% if number == display_limit %} selected{% endif %}>{{ number }}</option>{% endfor %}</select>
+            </div>
+        </section>
+        <section class="concert-form">
+            <h2 id="form-heading">Konzert erfassen</h2>
+            <form id="concert-form">
+                <input id="concert-id" type="hidden">
+                <input id="concert-image" type="hidden">
+                <input id="concert-image-srcset" type="hidden">
+                <div class="concert-form-grid">
+                    <label class="concert-field concert-field-wide">Titel<input id="title" required maxlength="160"></label>
+                    <label class="concert-field concert-field-wide">Beschrieb <textarea id="description" rows="4" maxlength="3000"></textarea></label>
+                    <label class="concert-field">Datum<input id="date" type="date" required></label>
+                    <label class="concert-field">Zeit<input id="time" required maxlength="100" placeholder="z. B. 20:00 Uhr"></label>
+                    <label class="concert-field">Ort<input id="venue" required maxlength="250"></label>
+                    <label class="concert-field">Google-Maps-Link<input id="maps-url" type="url" placeholder="https://..."></label>
+                    <label class="concert-field">Externer Link<input id="external-url" type="url" placeholder="https://..."></label>
+                    <label class="concert-field">Linktext<input id="external-text" maxlength="160" placeholder="z. B. Zur Venue"></label>
+                    <label class="concert-field concert-field-wide">Flyer oder Konzertbild<input id="image-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><span class="upload-hint">Empfohlen: mindestens 1800 × 1200 px; das Bild wird vollständig gezeigt.</span></label>
+                    <label class="concert-field concert-checkbox concert-field-wide"><input id="is-public" type="checkbox" checked> Öffentlich auf der Website anzeigen</label>
+                </div>
+                <div class="concert-form-actions"><button class="btn btn-primary" type="submit">Konzert speichern</button><button class="btn btn-secondary" id="cancel-edit" type="button" hidden>Abbrechen</button><span id="form-message" role="status"></span></div>
+            </form>
+        </section>
+        <section class="concert-admin-list"><h2>Erfasste Konzerte</h2>
+            {% if concerts %}{% for concert in concerts %}
+            <article class="concert-admin-item" data-concert='{{ concert | tojson }}'>
+                {% if concert.image %}<img class="concert-admin-image" src="{{ concert.image }}" alt="">{% else %}<div class="concert-admin-image"></div>{% endif %}
+                <div><strong>{{ concert.title }}</strong><p class="concert-admin-meta">{{ concert.date }} · {{ concert.time }} · {{ concert.venue }}{% if not concert.is_public %} <span class="status-private">(nicht öffentlich)</span>{% endif %}</p></div>
+                <div class="concert-row-actions"><button class="btn btn-secondary edit-concert" type="button">Bearbeiten</button><button class="btn btn-secondary delete-concert" type="button">Löschen</button></div>
+            </article>
+            {% endfor %}{% else %}<p>Noch keine Konzerte erfasst.</p>{% endif %}
+        </section>
+    </main>
+<script>
+const form = document.getElementById('concert-form');
+const formMessage = document.getElementById('form-message');
+const field = (id) => document.getElementById(id);
+const resetForm = () => { form.reset(); field('concert-id').value = ''; field('concert-image').value = ''; field('concert-image-srcset').value = ''; field('is-public').checked = true; field('form-heading').textContent = 'Konzert erfassen'; field('cancel-edit').hidden = true; };
+const payload = () => ({ title: field('title').value, description: field('description').value || null, image: field('concert-image').value || null, image_srcset: field('concert-image-srcset').value || null, date: field('date').value, time: field('time').value, venue: field('venue').value, maps_url: field('maps-url').value || null, external_url: field('external-url').value || null, external_text: field('external-text').value || null, is_public: field('is-public').checked });
+field('display-limit').addEventListener('change', async function() { await fetch('/api/admin/concerts/settings', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({display_limit:Number(this.value)}) }); });
+field('image-file').addEventListener('change', async function() { if (!this.files[0]) return; formMessage.textContent = 'Bild wird hochgeladen...'; const data = new FormData(); data.append('file', this.files[0]); const response = await fetch('/api/admin/upload', {method:'POST', body:data}); const result = await response.json(); if (!response.ok) { formMessage.textContent = result.detail?.message || 'Upload fehlgeschlagen'; return; } field('concert-image').value = result.default_src; field('concert-image-srcset').value = result.srcset; formMessage.textContent = 'Bild bereit'; });
+form.addEventListener('submit', async function(event) { event.preventDefault(); const id = field('concert-id').value; const response = await fetch(id ? '/api/admin/concerts/' + id : '/api/admin/concerts', { method:id ? 'PUT' : 'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload()) }); if (!response.ok) { const result = await response.json(); formMessage.textContent = result.detail?.message || 'Speichern fehlgeschlagen'; return; } window.location.reload(); });
+document.querySelectorAll('.edit-concert').forEach((button) => button.addEventListener('click', function() { const concert = JSON.parse(this.closest('[data-concert]').dataset.concert); field('concert-id').value = concert.id; field('title').value = concert.title; field('description').value = concert.description || ''; field('date').value = concert.date; field('time').value = concert.time; field('venue').value = concert.venue; field('maps-url').value = concert.maps_url || ''; field('external-url').value = concert.external_url || ''; field('external-text').value = concert.external_text || ''; field('concert-image').value = concert.image || ''; field('concert-image-srcset').value = concert.image_srcset || ''; field('is-public').checked = concert.is_public; field('form-heading').textContent = 'Konzert bearbeiten'; field('cancel-edit').hidden = false; window.scrollTo({top:0, behavior:'smooth'}); }));
+document.querySelectorAll('.delete-concert').forEach((button) => button.addEventListener('click', async function() { const concert = JSON.parse(this.closest('[data-concert]').dataset.concert); if (!window.confirm('Konzert wirklich löschen?')) return; const response = await fetch('/api/admin/concerts/' + concert.id, {method:'DELETE'}); if (response.ok) window.location.reload(); }));
+field('cancel-edit').addEventListener('click', resetForm);
+</script>
+</body>
+</html>

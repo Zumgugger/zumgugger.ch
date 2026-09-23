@@ -20,7 +20,7 @@ from sqlalchemy.engine import Engine
 logger = logging.getLogger(__name__)
 
 # Current schema version - increment when adding upgrade functions
-SCHEMA_VERSION = 5
+SCHEMA_VERSION = 6
 
 
 def upgrade_v1_to_v2(engine: Engine) -> None:
@@ -100,6 +100,24 @@ def upgrade_v4_to_v5(engine: Engine) -> None:
             logger.info("Added repertoire_intro column to site_content")
 
 
+def upgrade_v5_to_v6(engine: Engine) -> None:
+    """Add the optional concerts module to existing sites."""
+    with engine.begin() as conn:
+        content_columns = {row[1] for row in conn.execute(text("PRAGMA table_info(site_content)"))}
+        if "concerts_items" not in content_columns:
+            conn.execute(text("ALTER TABLE site_content ADD COLUMN concerts_items JSON"))
+        config_columns = {row[1] for row in conn.execute(text("PRAGMA table_info(site_config)"))}
+        if "concerts_display_limit" not in config_columns:
+            conn.execute(text("ALTER TABLE site_config ADD COLUMN concerts_display_limit INTEGER NOT NULL DEFAULT 5"))
+        for config_id, module_states, module_order in conn.execute(text("SELECT id, module_states, module_order FROM site_config")).fetchall():
+            states = json.loads(module_states) if module_states else {}
+            order = json.loads(module_order) if module_order else []
+            states.setdefault("concerts", "available")
+            if "concerts" not in order:
+                order.insert(order.index("contact") if "contact" in order else len(order), "concerts")
+            conn.execute(text("UPDATE site_config SET module_states=:states, module_order=:order WHERE id=:id"), {"id": config_id, "states": json.dumps(states), "order": json.dumps(order)})
+
+
 # Schema version table definition
 metadata = MetaData()
 schema_version_table = Table(
@@ -117,6 +135,7 @@ UPGRADES: Dict[int, Tuple[str, Callable[[Engine], None]]] = {
     3: ("Phase 15: Logo and favicon fields in SiteConfig", upgrade_v2_to_v3),
     4: ("Repertoire module", upgrade_v3_to_v4),
     5: ("Editable repertoire introduction", upgrade_v4_to_v5),
+    6: ("Optional concerts module", upgrade_v5_to_v6),
 }
 
 

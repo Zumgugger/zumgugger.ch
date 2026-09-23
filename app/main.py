@@ -16,7 +16,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.config import get_settings
 from app.database import init_db, get_engine, check_db_connection, get_db_context
-from app.routes import health, admin, public, admin_content, images, contact
+from app.routes import health, admin, public, admin_content, images, contact, concerts
 from app.schema_upgrades import initialize_schema
 from app.utils.storage import ensure_directories, cleanup_temp_files
 from app.middleware.maintenance import MaintenanceMiddleware
@@ -370,6 +370,7 @@ def create_app() -> FastAPI:
     app.include_router(admin.router)
     app.include_router(admin_content.router)
     app.include_router(images.router)
+    app.include_router(concerts.router)
     app.include_router(contact.router)
     app.include_router(public.router)
     

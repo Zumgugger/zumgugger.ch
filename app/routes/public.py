@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timezone
 from typing import Optional
+from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import HTMLResponse
@@ -20,6 +21,18 @@ from app.middleware.auth import get_optional_admin
 logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["public"])
+
+
+def format_concert_date(item: dict) -> dict:
+    """Add a localized display date without changing the stored ISO date."""
+    display_item = dict(item)
+    try:
+        display_item["date_display"] = datetime.strptime(
+            item.get("date", ""), "%Y-%m-%d"
+        ).strftime("%d.%m.%Y")
+    except ValueError:
+        display_item["date_display"] = item.get("date", "")
+    return display_item
 
 
 def get_site_from_request(request: Request, db: Session) -> Optional[Site]:
@@ -81,6 +94,15 @@ def get_template_context(site: Site, content: SiteContent, config: SiteConfig, i
     modules = []
     for module_type in enabled_modules:
         module_data = content.get_module_data(module_type)
+        if module_type == "concerts":
+            today = datetime.now(ZoneInfo("Europe/Zurich")).date().isoformat()
+            public_items = [item for item in module_data["items"] if item.get("is_public", True)]
+            upcoming = sorted((item for item in public_items if item.get("date", "") >= today), key=lambda item: item.get("date", ""))
+            past = sorted((item for item in public_items if item.get("date", "") < today), key=lambda item: item.get("date", ""), reverse=True)
+            module_data = {
+                "items": [format_concert_date(item) for item in upcoming[:config.concerts_display_limit]],
+                "past_items": [format_concert_date(item) for item in past],
+            }
         modules.append({
             "type": module_type,
             "data": module_data,

@@ -123,6 +123,7 @@ IMAGE_FIELD_MAP = {
     "services": ("services", True),  # services[i].image
     "about_blocks": ("about", True),  # about_blocks[i] where type=image or gallery
     "media_blocks": ("media", True),  # media_blocks[i] where type=image or gallery
+    "concerts_items": ("concerts", True),  # concerts_items[i].image
 }
 
 

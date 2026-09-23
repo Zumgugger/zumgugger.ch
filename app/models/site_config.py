@@ -26,6 +26,7 @@ DEFAULT_MODULE_ORDER = [
     "repertoire",
     "media",
     "faq",
+    "concerts",
     "contact",
     "footer",
 ]
@@ -76,6 +77,10 @@ class SiteConfig(Base, BaseMixin):
     # Favicon image path (uploaded favicon)
     favicon_image: Mapped[Optional[str]] = mapped_column(
         String(255), nullable=True, default=None
+    )
+
+    concerts_display_limit: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=5
     )
 
     # Relationships
@@ -138,6 +143,7 @@ class SiteConfig(Base, BaseMixin):
             "repertoire": "Repertoire",
             "media": "Medien",
             "faq": "FAQ",
+            "concerts": "Konzerte",
             "contact": "Kontakt",
             "footer": "",  # No nav item for footer
         }
@@ -192,6 +198,7 @@ class SiteConfig(Base, BaseMixin):
             "repertoire": "available",
             "media": "available",  # Off by default
             "faq": "available",    # Off by default
+            "concerts": "available",
             "contact": "enabled",
             "footer": "enabled",
         }

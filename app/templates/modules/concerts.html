@@ -1,0 +1,85 @@
+<!-- Concerts Module -->
+<section class="module module-concerts" id="concerts"{% if is_admin %} data-module="concerts" data-module-label="{{ module.title or module.type }}"{% endif %}>
+    <div class="container">
+        <div class="concerts-heading">
+            <h2 class="section-title"{% if is_admin %} data-nav-editable="{{ module.type }}" title="Klicken zum Bearbeiten"{% endif %}>{{ module.title }}</h2>
+            {% if is_admin %}
+            <a class="btn btn-secondary" href="/admin/concerts">Konzerte verwalten</a>
+            {% endif %}
+        </div>
+
+        {% if module.data['items'] %}
+        <div class="concert-list">
+            {% for concert in module.data['items'] %}
+            <article class="concert-item">
+                {% if concert.image %}
+                <div class="concert-image">
+                    <img src="{{ concert.image }}"{% if concert.image_srcset %} srcset="{{ concert.image_srcset }}" sizes="(max-width: 767px) 100vw, 360px"{% endif %} alt="{{ concert.title }}" loading="lazy">
+                </div>
+                {% endif %}
+                <div class="concert-details">
+                    <p class="concert-date">{{ concert.date_display }} · {{ concert.time }}</p>
+                    <h3>{{ concert.title }}</h3>
+                    {% if concert.description %}<p class="concert-description">{{ concert.description | linebreaks }}</p>{% endif %}
+                    {% if concert.maps_url %}
+                    <a class="concert-venue" href="{{ concert.maps_url }}" target="_blank" rel="noopener">{{ concert.venue }}</a>
+                    {% else %}
+                    <p class="concert-venue">{{ concert.venue }}</p>
+                    {% endif %}
+                    {% if concert.external_url and concert.external_text %}
+                    <a class="concert-link" href="{{ concert.external_url }}" target="_blank" rel="noopener">{{ concert.external_text }}</a>
+                    {% endif %}
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="concert-empty">Zurzeit sind keine Konzerte geplant.</p>
+        {% endif %}
+
+        {% if module.data['past_items'] %}
+        <div class="past-concerts" data-past-concerts>
+            <button class="btn btn-secondary past-concerts-toggle" type="button" aria-expanded="false">Vergangene Konzerte anzeigen</button>
+            <div class="past-concerts-list" hidden>
+                {% for concert in module.data['past_items'] %}
+                <article class="concert-item past-concert"{% if loop.index > 6 %} hidden{% endif %}>
+                    {% if concert.image %}
+                    <div class="concert-image">
+                        <img src="{{ concert.image }}"{% if concert.image_srcset %} srcset="{{ concert.image_srcset }}" sizes="(max-width: 767px) 100vw, 360px"{% endif %} alt="{{ concert.title }}" loading="lazy">
+                    </div>
+                    {% endif %}
+                    <div class="concert-details">
+                        <p class="concert-date">{{ concert.date_display }} · {{ concert.time }}</p>
+                        <h3>{{ concert.title }}</h3>
+                        {% if concert.description %}<p class="concert-description">{{ concert.description | linebreaks }}</p>{% endif %}
+                        {% if concert.maps_url %}<a class="concert-venue" href="{{ concert.maps_url }}" target="_blank" rel="noopener">{{ concert.venue }}</a>{% else %}<p class="concert-venue">{{ concert.venue }}</p>{% endif %}
+                    </div>
+                </article>
+                {% endfor %}
+                {% if module.data['past_items']|length > 6 %}<button class="btn btn-secondary past-concerts-more" type="button">Mehr anzeigen</button>{% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+document.querySelectorAll('[data-past-concerts]').forEach(function(container) {
+    const toggle = container.querySelector('.past-concerts-toggle');
+    const list = container.querySelector('.past-concerts-list');
+    const more = container.querySelector('.past-concerts-more');
+    toggle.addEventListener('click', function() {
+        const visible = !list.hidden;
+        list.hidden = visible;
+        toggle.setAttribute('aria-expanded', String(!visible));
+        toggle.textContent = visible ? 'Vergangene Konzerte anzeigen' : 'Vergangene Konzerte verbergen';
+    });
+    if (more) {
+        more.addEventListener('click', function() {
+            const hidden = Array.from(list.querySelectorAll('.past-concert[hidden]')).slice(0, 6);
+            hidden.forEach(function(item) { item.hidden = false; });
+            if (!list.querySelector('.past-concert[hidden]')) more.hidden = true;
+        });
+    }
+});
+</script>
