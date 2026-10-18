@@ -15,8 +15,8 @@
   },
   "theme": "clean",
   "css_variables": {
-    "--color-primary": "#ffffff",
-    "--color-primary-dark": "#ffffff",
+    "--color-primary": "#000000",
+    "--color-primary-dark": "#000000",
     "--color-secondary": "#64748b",
     "--color-accent": "#f59e0b",
     "--color-text": "#1e293b",

@@ -20,7 +20,7 @@ from sqlalchemy.engine import Engine
 logger = logging.getLogger(__name__)
 
 # Current schema version - increment when adding upgrade functions
-SCHEMA_VERSION = 6
+SCHEMA_VERSION = 7
 
 
 def upgrade_v1_to_v2(engine: Engine) -> None:
@@ -118,6 +118,24 @@ def upgrade_v5_to_v6(engine: Engine) -> None:
             conn.execute(text("UPDATE site_config SET module_states=:states, module_order=:order WHERE id=:id"), {"id": config_id, "states": json.dumps(states), "order": json.dumps(order)})
 
 
+def upgrade_v6_to_v7(engine: Engine) -> None:
+    """Correct white primary colors that are invisible on a white background."""
+    with engine.begin() as conn:
+        configs = conn.execute(text("SELECT id, css_variables FROM site_config")).fetchall()
+        for config_id, css_variables in configs:
+            variables = json.loads(css_variables) if css_variables else {}
+            if (
+                variables.get("--color-primary") == "#ffffff"
+                and variables.get("--color-bg", "#ffffff") == "#ffffff"
+            ):
+                variables["--color-primary"] = "#000000"
+                variables["--color-primary-dark"] = "#000000"
+                conn.execute(
+                    text("UPDATE site_config SET css_variables = :variables WHERE id = :id"),
+                    {"id": config_id, "variables": json.dumps(variables)},
+                )
+
+
 # Schema version table definition
 metadata = MetaData()
 schema_version_table = Table(
@@ -136,6 +154,7 @@ UPGRADES: Dict[int, Tuple[str, Callable[[Engine], None]]] = {
     4: ("Repertoire module", upgrade_v3_to_v4),
     5: ("Editable repertoire introduction", upgrade_v4_to_v5),
     6: ("Optional concerts module", upgrade_v5_to_v6),
+    7: ("Fix invisible white primary color", upgrade_v6_to_v7),
 }
 
 
