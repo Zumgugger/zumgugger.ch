@@ -120,6 +120,14 @@ def get_template_context(site: Site, content: SiteContent, config: SiteConfig, i
             if state == "enabled":
                 # Find the module data from the already-built modules list
                 module_data = content.get_module_data(module_type)
+                if module_type == "concerts":
+                    module_data = {
+                        "items": [
+                            format_concert_date(item)
+                            for item in module_data["items"]
+                        ],
+                        "past_items": [],
+                    }
                 all_modules_ordered.append({
                     "type": module_type,
                     "data": module_data,

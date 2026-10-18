@@ -50,6 +50,7 @@ def test_create_public_concert_is_rendered_on_homepage(
 
     assert home.status_code == 200
     assert "Sommerkonzert" in home.text
+    assert "15.06.2099" in home.text
     assert "Tickets" in home.text
 
 
