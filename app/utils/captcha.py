@@ -62,7 +62,7 @@ class CaptchaVerifier:
         
         if not self.secret_key:
             logger.warning("CAPTCHA secret key not configured")
-            return True  # Fail open if not configured
+            return False
         
         try:
             data = {
@@ -88,11 +88,11 @@ class CaptchaVerifier:
             
         except httpx.HTTPError as e:
             logger.error(f"HTTP error during CAPTCHA verification: {e}")
-            return True  # Fail open on network errors
+            return False
             
         except Exception as e:
             logger.error(f"Unexpected error during CAPTCHA verification: {e}")
-            return True  # Fail open on unexpected errors
+            return False
     
     def verify(
         self,
@@ -117,7 +117,7 @@ class CaptchaVerifier:
         
         if not self.secret_key:
             logger.warning("CAPTCHA secret key not configured")
-            return True  # Fail open if not configured
+            return False
         
         try:
             data = {
@@ -143,11 +143,11 @@ class CaptchaVerifier:
             
         except httpx.HTTPError as e:
             logger.error(f"HTTP error during CAPTCHA verification: {e}")
-            return True  # Fail open on network errors
+            return False
             
         except Exception as e:
             logger.error(f"Unexpected error during CAPTCHA verification: {e}")
-            return True  # Fail open on unexpected errors
+            return False
 
 
 # Global CAPTCHA verifier instance

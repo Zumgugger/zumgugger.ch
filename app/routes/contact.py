@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.site import Site
 from app.routes.public import get_site_from_request
-from app.utils.contact import validate_contact, ContactType
+from app.utils.contact import is_contact_denied, validate_contact, ContactType
 from app.utils.spam import get_spam_checker
 from app.utils.email import get_email_client, compose_contact_email
 from app.utils.sms import get_sms_client, compose_contact_sms
@@ -119,6 +119,12 @@ async def submit_contact_form(
     
     normalized_contact = validation.normalized_value
     contact_type = validation.contact_type.value
+
+    from app.config import get_settings
+    if is_contact_denied(normalized_contact, get_settings().contact_denylist):
+        logger.info("Denied contact submission blocked")
+        await add_spam_delay()
+        return ContactSubmitResponse(status="submitted")
     
     # Get spam checker
     spam_checker = get_spam_checker()

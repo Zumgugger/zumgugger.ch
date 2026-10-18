@@ -10,6 +10,7 @@ from fastapi.testclient import TestClient
 
 from app.utils.spam import SpamChecker, get_spam_checker, reset_spam_checker
 from app.utils.contact import (
+    is_contact_denied,
     validate_contact,
     ContactType,
     is_email,
@@ -59,6 +60,15 @@ class TestContactValidation:
         """Test email normalization (lowercase, strip)."""
         assert normalize_email("  TEST@EXAMPLE.COM  ") == "test@example.com"
         assert normalize_email("User@Domain.COM") == "user@domain.com"
+
+    def test_contact_denylist_matches_normalized_values(self):
+        """Test contact deny-list matching ignores surrounding whitespace and case."""
+        denylist = "spam@example.com, Another@Example.com, +41791234567"
+
+        assert is_contact_denied("spam@example.com", denylist) is True
+        assert is_contact_denied("another@example.com", denylist) is True
+        assert is_contact_denied("+41791234567", denylist) is True
+        assert is_contact_denied("visitor@example.com", denylist) is False
     
     def test_normalize_phone_swiss(self):
         """Test phone normalization for Swiss numbers."""

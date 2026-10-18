@@ -133,6 +133,10 @@ class Settings(BaseSettings):
         default="",
         description="Cloudflare Turnstile secret key (server-side)",
     )
+    contact_denylist: str = Field(
+        default="",
+        description="Comma-separated email addresses or phone numbers blocked from the contact form",
+    )
 
     # Analytics Configuration (Plausible)
     analytics_enabled: bool = Field(

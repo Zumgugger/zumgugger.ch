@@ -86,6 +86,16 @@ def normalize_email(email: str) -> str:
     return email.strip().lower()
 
 
+def is_contact_denied(normalized_contact: str, denylist: str) -> bool:
+    """Return whether a normalized contact value is in the configured deny-list."""
+    denied_contacts = {
+        value.strip().casefold()
+        for value in denylist.split(",")
+        if value.strip()
+    }
+    return normalized_contact.casefold() in denied_contacts
+
+
 def normalize_phone(phone: str, region: str = DEFAULT_PHONE_REGION) -> Tuple[bool, str, Optional[str]]:
     """Normalize a phone number to E.164 format.
     
