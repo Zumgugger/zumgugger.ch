@@ -120,7 +120,7 @@ def _site_content_config(admin: AdminUser, db: Session) -> tuple[Site, SiteConte
 
 
 def _sorted_concerts(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    return sorted(items, key=lambda item: item.get("date", ""), reverse=True)
+    return sorted(items, key=lambda item: item.get("date", ""))
 
 
 @router.get("/admin/concerts", response_class=HTMLResponse)

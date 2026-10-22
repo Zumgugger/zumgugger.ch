@@ -98,7 +98,7 @@ def get_template_context(site: Site, content: SiteContent, config: SiteConfig, i
             today = datetime.now(ZoneInfo("Europe/Zurich")).date().isoformat()
             public_items = [item for item in module_data["items"] if item.get("is_public", True)]
             upcoming = sorted((item for item in public_items if item.get("date", "") >= today), key=lambda item: item.get("date", ""))
-            past = sorted((item for item in public_items if item.get("date", "") < today), key=lambda item: item.get("date", ""), reverse=True)
+            past = sorted((item for item in public_items if item.get("date", "") < today), key=lambda item: item.get("date", ""))
             module_data = {
                 "items": [format_concert_date(item) for item in upcoming[:config.concerts_display_limit]],
                 "past_items": [format_concert_date(item) for item in past],
@@ -124,7 +124,9 @@ def get_template_context(site: Site, content: SiteContent, config: SiteConfig, i
                     module_data = {
                         "items": [
                             format_concert_date(item)
-                            for item in module_data["items"]
+                            for item in sorted(
+                                module_data["items"], key=lambda item: item.get("date", "")
+                            )
                         ],
                         "past_items": [],
                     }

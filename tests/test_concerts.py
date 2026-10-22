@@ -89,6 +89,42 @@ def test_private_and_past_concerts_are_not_in_upcoming_list(
     assert "Vergangen" in home.text
 
 
+def test_concerts_are_sorted_by_date_on_homepage_and_admin_page(
+    test_client_with_site: TestClient,
+    test_admin_session,
+    test_db: Session,
+    test_site: Site,
+):
+    """Concert lists show the earliest dates first in all page views."""
+    for title, date in [
+        ("Späteres Konzert", "2099-06-16"),
+        ("Früheres Konzert", "2099-06-15"),
+    ]:
+        payload = concert_payload(title)
+        payload["date"] = date
+        assert test_client_with_site.post(
+            "/api/admin/concerts",
+            json=payload,
+            cookies={"session_token": test_admin_session.token},
+        ).status_code == 200
+
+    config = test_db.query(SiteConfig).filter_by(site_id=test_site.id).one()
+    config.module_states = {**config.module_states, "concerts": "enabled"}
+    if "concerts" not in config.module_order:
+        config.module_order.insert(-1, "concerts")
+    test_db.commit()
+
+    admin_page = test_client_with_site.get(
+        "/admin/concerts", cookies={"session_token": test_admin_session.token}
+    )
+    homepage = test_client_with_site.get("/", params={"site_domain": test_site.domain})
+
+    assert admin_page.status_code == 200
+    assert homepage.status_code == 200
+    assert admin_page.text.index("Früheres Konzert") < admin_page.text.index("Späteres Konzert")
+    assert homepage.text.index("Früheres Konzert") < homepage.text.index("Späteres Konzert")
+
+
 def test_concert_display_limit_must_be_within_configured_range(
     test_client_with_site: TestClient,
     test_admin_session,
