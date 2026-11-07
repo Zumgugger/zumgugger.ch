@@ -75,6 +75,42 @@
     }
 })();
 
+// Past concerts
+(function() {
+    'use strict';
+
+    document.querySelectorAll('[data-past-concerts]').forEach(function(container) {
+        const toggle = container.querySelector('.past-concerts-toggle');
+        const list = container.querySelector('.past-concerts-list');
+        const more = container.querySelector('.past-concerts-more');
+
+        if (!toggle || !list) return;
+
+        toggle.addEventListener('click', function() {
+            const isVisible = !list.hidden;
+            list.hidden = isVisible;
+            toggle.setAttribute('aria-expanded', String(!isVisible));
+            toggle.textContent = isVisible
+                ? 'Vergangene Konzerte anzeigen'
+                : 'Vergangene Konzerte verbergen';
+        });
+
+        if (more) {
+            more.addEventListener('click', function() {
+                Array.from(list.querySelectorAll('.past-concert[hidden]'))
+                    .slice(0, 6)
+                    .forEach(function(item) {
+                        item.hidden = false;
+                    });
+
+                if (!list.querySelector('.past-concert[hidden]')) {
+                    more.hidden = true;
+                }
+            });
+        }
+    });
+})();
+
 // YouTube embed loading
 function loadYouTube(placeholder) {
     const container = placeholder.closest('.media-youtube');
