@@ -62,3 +62,34 @@
         {% endif %}
     </div>
 </section>
+
+<script>
+document.querySelectorAll('[data-past-concerts]').forEach(function(container) {
+    const toggle = container.querySelector('.past-concerts-toggle');
+    const list = container.querySelector('.past-concerts-list');
+    const more = container.querySelector('.past-concerts-more');
+
+    toggle.addEventListener('click', function() {
+        const visible = !list.hidden;
+        list.hidden = visible;
+        toggle.setAttribute('aria-expanded', String(!visible));
+        toggle.textContent = visible
+            ? 'Vergangene Konzerte anzeigen'
+            : 'Vergangene Konzerte verbergen';
+    });
+
+    if (more) {
+        more.addEventListener('click', function() {
+            const hidden = Array.from(
+                list.querySelectorAll('.past-concert[hidden]')
+            ).slice(0, 6);
+            hidden.forEach(function(item) {
+                item.hidden = false;
+            });
+            if (!list.querySelector('.past-concert[hidden]')) {
+                more.hidden = true;
+            }
+        });
+    }
+});
+</script>

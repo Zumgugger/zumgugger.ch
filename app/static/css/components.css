@@ -84,6 +84,11 @@
     margin-top: var(--spacing-lg);
 }
 
+.past-concerts-list[hidden],
+.past-concert[hidden] {
+    display: none !important;
+}
+
 @media (max-width: 767px) {
     .concerts-heading {
         flex-direction: column;
