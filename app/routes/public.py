@@ -99,8 +99,9 @@ def get_template_context(site: Site, content: SiteContent, config: SiteConfig, i
             public_items = [item for item in module_data["items"] if item.get("is_public", True)]
             upcoming = sorted((item for item in public_items if item.get("date", "") >= today), key=lambda item: item.get("date", ""))
             past = sorted((item for item in public_items if item.get("date", "") < today), key=lambda item: item.get("date", ""))
+            limit = config.concerts_display_limit
             module_data = {
-                "items": [format_concert_date(item) for item in upcoming[:config.concerts_display_limit]],
+                "items": [format_concert_date(item) for item in (upcoming if limit == 0 else upcoming[:limit])],
                 "past_items": [format_concert_date(item) for item in past],
             }
         modules.append({

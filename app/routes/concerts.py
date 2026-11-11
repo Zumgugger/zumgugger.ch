@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import re
-from datetime import date
+from datetime import date, datetime
 from typing import Any, Optional
+from zoneinfo import ZoneInfo
 from urllib.parse import urlparse
 from uuid import uuid4
 
@@ -104,7 +105,8 @@ class ConcertPayload(BaseModel):
 class ConcertSettingsPayload(BaseModel):
     """Public concert-list settings."""
 
-    display_limit: int = Field(..., ge=1, le=24)
+    # 0 means "alle" (no limit)
+    display_limit: int = Field(..., ge=0, le=24)
 
 
 def _site_content_config(admin: AdminUser, db: Session) -> tuple[Site, SiteContent, SiteConfig]:
@@ -123,6 +125,12 @@ def _sorted_concerts(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return sorted(items, key=lambda item: item.get("date", ""))
 
 
+def _upcoming_concerts(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Keep only concerts happening today or in the future (Europe/Zurich)."""
+    today = datetime.now(ZoneInfo("Europe/Zurich")).date().isoformat()
+    return [item for item in items if item.get("date", "") >= today]
+
+
 @router.get("/admin/concerts", response_class=HTMLResponse)
 async def concerts_page(
     request: Request,
@@ -136,7 +144,7 @@ async def concerts_page(
         "admin_concerts.html",
         {
             "site": site,
-            "concerts": _sorted_concerts(content.concerts_items or []),
+            "concerts": _sorted_concerts(_upcoming_concerts(content.concerts_items or [])),
             "display_limit": config.concerts_display_limit,
         },
     )
@@ -159,6 +167,22 @@ async def create_concert(
     delete_old_changes(db, site.id, keep_count=50)
     db.commit()
     return {"status": "success", "concert": item}
+
+
+@router.put("/api/admin/concerts/settings")
+async def update_concert_settings(
+    payload: ConcertSettingsPayload,
+    admin: AdminUser = Depends(require_auth),
+    db: Session = Depends(get_db),
+) -> dict[str, int | str]:
+    """Update the number of upcoming concerts shown publicly (0 = all)."""
+    site, _, config = _site_content_config(admin, db)
+    old_value = config.concerts_display_limit
+    config.concerts_display_limit = payload.display_limit
+    record_change(db, site.id, admin.id, "concerts", "concerts_display_limit", old_value, payload.display_limit, "Anzeigegrenze Konzerte geändert")
+    delete_old_changes(db, site.id, keep_count=50)
+    db.commit()
+    return {"status": "success", "display_limit": payload.display_limit}
 
 
 @router.put("/api/admin/concerts/{concert_id}")
@@ -202,19 +226,3 @@ async def delete_concert(
     delete_old_changes(db, site.id, keep_count=50)
     db.commit()
     return {"status": "success"}
-
-
-@router.put("/api/admin/concerts/settings")
-async def update_concert_settings(
-    payload: ConcertSettingsPayload,
-    admin: AdminUser = Depends(require_auth),
-    db: Session = Depends(get_db),
-) -> dict[str, int | str]:
-    """Update the number of upcoming concerts shown publicly."""
-    site, _, config = _site_content_config(admin, db)
-    old_value = config.concerts_display_limit
-    config.concerts_display_limit = payload.display_limit
-    record_change(db, site.id, admin.id, "concerts", "concerts_display_limit", old_value, payload.display_limit, "Anzeigegrenze Konzerte geändert")
-    delete_old_changes(db, site.id, keep_count=50)
-    db.commit()
-    return {"status": "success", "display_limit": payload.display_limit}

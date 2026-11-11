@@ -129,7 +129,7 @@ def test_concert_display_limit_must_be_within_configured_range(
     test_client_with_site: TestClient,
     test_admin_session,
 ):
-    """The public display limit is restricted to one through twenty-four."""
+    """The public display limit is restricted to zero through twenty-four."""
     response = test_client_with_site.put(
         "/api/admin/concerts/settings",
         json={"display_limit": 25},
@@ -137,3 +137,76 @@ def test_concert_display_limit_must_be_within_configured_range(
     )
 
     assert response.status_code == 422
+
+
+def test_concert_display_limit_is_saved(
+    test_client_with_site: TestClient,
+    test_admin_session,
+    test_db: Session,
+    test_site: Site,
+):
+    """Saving the display limit persists it instead of matching the concert route."""
+    response = test_client_with_site.put(
+        "/api/admin/concerts/settings",
+        json={"display_limit": 10},
+        cookies={"session_token": test_admin_session.token},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["display_limit"] == 10
+    config = test_db.query(SiteConfig).filter_by(site_id=test_site.id).one()
+    test_db.refresh(config)
+    assert config.concerts_display_limit == 10
+
+
+def test_concert_display_limit_zero_shows_all_upcoming_concerts(
+    test_client_with_site: TestClient,
+    test_admin_session,
+    test_db: Session,
+    test_site: Site,
+):
+    """A display limit of zero renders every upcoming concert publicly."""
+    for index in range(6):
+        payload = concert_payload(f"Konzert {index}")
+        payload["date"] = f"2099-06-{15 + index:02d}"
+        assert test_client_with_site.post(
+            "/api/admin/concerts",
+            json=payload,
+            cookies={"session_token": test_admin_session.token},
+        ).status_code == 200
+
+    config = test_db.query(SiteConfig).filter_by(site_id=test_site.id).one()
+    config.module_states = {**config.module_states, "concerts": "enabled"}
+    config.concerts_display_limit = 0
+    if "concerts" not in config.module_order:
+        config.module_order.insert(-1, "concerts")
+    test_db.commit()
+
+    home = test_client_with_site.get("/", params={"site_domain": test_site.domain})
+
+    for index in range(6):
+        assert f"Konzert {index}" in home.text
+
+
+def test_admin_concert_list_hides_past_concerts(
+    test_client_with_site: TestClient,
+    test_admin_session,
+    test_db: Session,
+):
+    """The admin list only shows concerts from today onwards."""
+    for title, date in [("Zukunft", "2099-06-15"), ("Vergangenheit", "2000-06-15")]:
+        payload = concert_payload(title)
+        payload["date"] = date
+        assert test_client_with_site.post(
+            "/api/admin/concerts",
+            json=payload,
+            cookies={"session_token": test_admin_session.token},
+        ).status_code == 200
+
+    admin_page = test_client_with_site.get(
+        "/admin/concerts", cookies={"session_token": test_admin_session.token}
+    )
+
+    assert admin_page.status_code == 200
+    assert "Zukunft" in admin_page.text
+    assert "Vergangenheit" not in admin_page.text
