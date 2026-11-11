@@ -188,6 +188,41 @@ def test_concert_display_limit_zero_shows_all_upcoming_concerts(
         assert f"Konzert {index}" in home.text
 
 
+def test_admin_homepage_shows_past_concerts_behind_toggle(
+    test_client_with_site: TestClient,
+    test_admin_session,
+    test_db: Session,
+    test_site: Site,
+):
+    """Logged-in admins see the same toggle-hidden past concerts as visitors."""
+    for title, date in [("Kommend", "2099-06-15"), ("Vergangen", "2000-06-15")]:
+        payload = concert_payload(title)
+        payload["date"] = date
+        assert test_client_with_site.post(
+            "/api/admin/concerts",
+            json=payload,
+            cookies={"session_token": test_admin_session.token},
+        ).status_code == 200
+
+    config = test_db.query(SiteConfig).filter_by(site_id=test_site.id).one()
+    config.module_states = {**config.module_states, "concerts": "enabled"}
+    if "concerts" not in config.module_order:
+        config.module_order.insert(-1, "concerts")
+    test_db.commit()
+
+    home = test_client_with_site.get(
+        "/",
+        params={"site_domain": test_site.domain},
+        cookies={"session_token": test_admin_session.token},
+    )
+
+    assert home.status_code == 200
+    assert "Kommend" in home.text
+    assert "past-concerts-toggle" in home.text
+    # The past concert appears only inside the toggle-hidden past list.
+    assert home.text.index("past-concerts-toggle") < home.text.index("Vergangen")
+
+
 def test_admin_concert_list_hides_past_concerts(
     test_client_with_site: TestClient,
     test_admin_session,

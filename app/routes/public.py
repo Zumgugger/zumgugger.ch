@@ -35,6 +35,23 @@ def format_concert_date(item: dict) -> dict:
     return display_item
 
 
+def build_concerts_module_data(module_data: dict, config: SiteConfig) -> dict:
+    """Split concerts into the public upcoming list and the past list.
+
+    Only public concerts are included. The upcoming list honours the
+    configured display limit (0 means "alle" / no limit).
+    """
+    today = datetime.now(ZoneInfo("Europe/Zurich")).date().isoformat()
+    public_items = [item for item in module_data["items"] if item.get("is_public", True)]
+    upcoming = sorted((item for item in public_items if item.get("date", "") >= today), key=lambda item: item.get("date", ""))
+    past = sorted((item for item in public_items if item.get("date", "") < today), key=lambda item: item.get("date", ""))
+    limit = config.concerts_display_limit
+    return {
+        "items": [format_concert_date(item) for item in (upcoming if limit == 0 else upcoming[:limit])],
+        "past_items": [format_concert_date(item) for item in past],
+    }
+
+
 def get_site_from_request(request: Request, db: Session) -> Optional[Site]:
     """Get the site based on request host or query parameter.
     
@@ -95,15 +112,7 @@ def get_template_context(site: Site, content: SiteContent, config: SiteConfig, i
     for module_type in enabled_modules:
         module_data = content.get_module_data(module_type)
         if module_type == "concerts":
-            today = datetime.now(ZoneInfo("Europe/Zurich")).date().isoformat()
-            public_items = [item for item in module_data["items"] if item.get("is_public", True)]
-            upcoming = sorted((item for item in public_items if item.get("date", "") >= today), key=lambda item: item.get("date", ""))
-            past = sorted((item for item in public_items if item.get("date", "") < today), key=lambda item: item.get("date", ""))
-            limit = config.concerts_display_limit
-            module_data = {
-                "items": [format_concert_date(item) for item in (upcoming if limit == 0 else upcoming[:limit])],
-                "past_items": [format_concert_date(item) for item in past],
-            }
+            module_data = build_concerts_module_data(module_data, config)
         modules.append({
             "type": module_type,
             "data": module_data,
@@ -122,15 +131,9 @@ def get_template_context(site: Site, content: SiteContent, config: SiteConfig, i
                 # Find the module data from the already-built modules list
                 module_data = content.get_module_data(module_type)
                 if module_type == "concerts":
-                    module_data = {
-                        "items": [
-                            format_concert_date(item)
-                            for item in sorted(
-                                module_data["items"], key=lambda item: item.get("date", "")
-                            )
-                        ],
-                        "past_items": [],
-                    }
+                    # Admin view mirrors the public site: upcoming list with
+                    # display limit plus past concerts behind the toggle.
+                    module_data = build_concerts_module_data(module_data, config)
                 all_modules_ordered.append({
                     "type": module_type,
                     "data": module_data,
