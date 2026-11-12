@@ -20,7 +20,7 @@ from sqlalchemy.engine import Engine
 logger = logging.getLogger(__name__)
 
 # Current schema version - increment when adding upgrade functions
-SCHEMA_VERSION = 7
+SCHEMA_VERSION = 8
 
 
 def upgrade_v1_to_v2(engine: Engine) -> None:
@@ -136,6 +136,16 @@ def upgrade_v6_to_v7(engine: Engine) -> None:
                 )
 
 
+def upgrade_v7_to_v8(engine: Engine) -> None:
+    """Create the contact_submissions table for stored contact form submissions."""
+    logger.info("Applying schema v8 upgrade (contact submissions table)")
+
+    from app.models.base import Base
+    from app.models.contact_submission import ContactSubmission
+
+    Base.metadata.create_all(bind=engine, tables=[ContactSubmission.__table__])
+
+
 # Schema version table definition
 metadata = MetaData()
 schema_version_table = Table(
@@ -155,6 +165,7 @@ UPGRADES: Dict[int, Tuple[str, Callable[[Engine], None]]] = {
     5: ("Editable repertoire introduction", upgrade_v4_to_v5),
     6: ("Optional concerts module", upgrade_v5_to_v6),
     7: ("Fix invisible white primary color", upgrade_v6_to_v7),
+    8: ("Store contact form submissions", upgrade_v7_to_v8),
 }
 
 

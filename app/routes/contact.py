@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.models.contact_submission import ContactSubmission
 from app.models.site import Site
 from app.routes.public import get_site_from_request
 from app.utils.contact import is_contact_denied, validate_contact, ContactType
@@ -157,6 +158,25 @@ async def submit_contact_form(
     # Record the submission for rate limiting
     spam_checker.record_submission(ip_address, normalized_contact, message)
     
+    # Store the full submission in the database (notifications may truncate)
+    submission: Optional[ContactSubmission] = None
+    try:
+        submission = ContactSubmission(
+            site_id=site.id,
+            contact_raw=contact.strip(),
+            contact_value=normalized_contact,
+            contact_type=contact_type,
+            message=message,
+            ip_address=ip_address,
+        )
+        db.add(submission)
+        db.commit()
+        db.refresh(submission)
+    except Exception as e:
+        logger.error(f"Failed to store contact submission: {e}")
+        db.rollback()
+        submission = None
+    
     # Send email notification
     email_sent = False
     email_client = get_email_client()
@@ -225,11 +245,21 @@ async def submit_contact_form(
         except Exception as e:
             logger.error(f"Error sending contact SMS: {e}")
     
-    # Log the submission (for debugging, not stored)
+    # Log the submission
     logger.info(
         f"Contact submission processed: site={site.name}, "
         f"contact_type={contact_type}, email_sent={email_sent}, sms_sent={sms_sent}"
     )
+    
+    # Update notification delivery status on the stored submission
+    if submission is not None:
+        try:
+            submission.email_sent = email_sent
+            submission.sms_sent = sms_sent
+            db.commit()
+        except Exception as e:
+            logger.error(f"Failed to update contact submission status: {e}")
+            db.rollback()
     
     return ContactSubmitResponse(status="submitted")
 

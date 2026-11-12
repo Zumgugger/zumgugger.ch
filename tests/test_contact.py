@@ -541,6 +541,132 @@ class TestContactRouteIntegration:
 
 
 # =============================================================================
+# Contact Submission Storage Tests
+# =============================================================================
+
+class TestContactSubmissionStorage:
+    """Tests for storing contact submissions and the admin management routes."""
+    
+    @pytest.fixture(autouse=True)
+    def setup(self, test_client_with_site):
+        """Reset spam checker between tests."""
+        reset_spam_checker()
+    
+    def test_submission_stored_in_database(self, test_client_with_site, test_db, test_site):
+        """A valid submission is stored completely, without truncation."""
+        from app.models.contact_submission import ContactSubmission
+        
+        long_message = "Sehr lange Nachricht! " * 100  # Way beyond SMS limits
+        response = test_client_with_site.post(
+            "/api/contact/submit?site_domain=localhost",
+            data={
+                "contact": "  Visitor@Example.COM ",
+                "message": long_message,
+                "website": "",
+            },
+        )
+        assert response.status_code == 200
+        
+        submission = test_db.query(ContactSubmission).filter(
+            ContactSubmission.site_id == test_site.id
+        ).first()
+        assert submission is not None
+        assert submission.contact_value == "visitor@example.com"
+        assert submission.contact_raw == "Visitor@Example.COM"
+        assert submission.contact_type == "email"
+        assert submission.message == long_message
+    
+    def test_spam_submission_not_stored(self, test_client_with_site, test_db, test_site):
+        """Honeypot-flagged spam is not stored in the database."""
+        from app.models.contact_submission import ContactSubmission
+        
+        response = test_client_with_site.post(
+            "/api/contact/submit?site_domain=localhost",
+            data={
+                "contact": "spam@bot.com",
+                "message": "Buy now!",
+                "website": "http://spam.com",  # Filled honeypot
+            },
+        )
+        assert response.status_code == 200
+        
+        count = test_db.query(ContactSubmission).filter(
+            ContactSubmission.site_id == test_site.id
+        ).count()
+        assert count == 0
+    
+    def test_admin_page_lists_submissions(
+        self, test_client_with_site, test_db, test_site, test_admin_session
+    ):
+        """The admin page shows stored submissions."""
+        from app.models.contact_submission import ContactSubmission
+        
+        submission = ContactSubmission(
+            site_id=test_site.id,
+            contact_raw="caller@example.com",
+            contact_value="caller@example.com",
+            contact_type="email",
+            message="Bitte um Rückruf wegen Konzert.",
+            ip_address="1.2.3.4",
+        )
+        test_db.add(submission)
+        test_db.commit()
+        
+        response = test_client_with_site.get(
+            "/admin/contact-submissions",
+            cookies={"session_token": test_admin_session.token},
+        )
+        assert response.status_code == 200
+        assert "Kontaktanfragen" in response.text
+        assert "caller@example.com" in response.text
+        assert "Bitte um Rückruf wegen Konzert." in response.text
+    
+    def test_admin_page_requires_auth(self, test_client_with_site):
+        """The admin page is not accessible without authentication."""
+        response = test_client_with_site.get("/admin/contact-submissions")
+        assert response.status_code == 401
+    
+    def test_delete_submission(
+        self, test_client_with_site, test_db, test_site, test_admin_session
+    ):
+        """An admin can delete a stored submission."""
+        from app.models.contact_submission import ContactSubmission
+        
+        submission = ContactSubmission(
+            site_id=test_site.id,
+            contact_raw="+41791234567",
+            contact_value="+41791234567",
+            contact_type="phone",
+            message="Anruf erwünscht.",
+        )
+        test_db.add(submission)
+        test_db.commit()
+        submission_id = submission.id
+        
+        response = test_client_with_site.delete(
+            f"/admin/contact-submissions/{submission_id}",
+            cookies={"session_token": test_admin_session.token},
+        )
+        assert response.status_code == 204
+        
+        test_db.expire_all()
+        remaining = test_db.query(ContactSubmission).filter(
+            ContactSubmission.id == submission_id
+        ).first()
+        assert remaining is None
+    
+    def test_delete_missing_submission_returns_404(
+        self, test_client_with_site, test_admin_session
+    ):
+        """Deleting a nonexistent submission returns 404."""
+        response = test_client_with_site.delete(
+            "/admin/contact-submissions/99999",
+            cookies={"session_token": test_admin_session.token},
+        )
+        assert response.status_code == 404
+
+
+# =============================================================================
 # Global Spam Checker Tests
 # =============================================================================
 

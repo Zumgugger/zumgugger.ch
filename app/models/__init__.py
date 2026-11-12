@@ -6,6 +6,7 @@ from app.models.content import SiteContent
 from app.models.history import ContentChange
 from app.models.site_config import SiteConfig, MODULE_STATES, DEFAULT_MODULE_ORDER
 from app.models.session import AdminSession
+from app.models.contact_submission import ContactSubmission
 
 __all__ = [
     "Base",
@@ -18,4 +19,5 @@ __all__ = [
     "MODULE_STATES",
     "DEFAULT_MODULE_ORDER",
     "AdminSession",
+    "ContactSubmission",
 ]

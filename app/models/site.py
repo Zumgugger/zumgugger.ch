@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from app.models.content import SiteContent
     from app.models.site_config import SiteConfig
     from app.models.history import ContentChange
+    from app.models.contact_submission import ContactSubmission
 
 
 class Site(Base, BaseMixin):
@@ -38,6 +39,9 @@ class Site(Base, BaseMixin):
     )
     changes: Mapped[List["ContentChange"]] = relationship(
         "ContentChange", back_populates="site", cascade="all, delete-orphan"
+    )
+    contact_submissions: Mapped[List["ContactSubmission"]] = relationship(
+        "ContactSubmission", back_populates="site", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:

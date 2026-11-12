@@ -22,6 +22,7 @@ from app.middleware.auth import (
 )
 from app.models.session import AdminSession
 from app.models.site import AdminUser, Site
+from app.models.contact_submission import ContactSubmission
 from app.utils.auth import generate_session_token
 from app.utils.history import record_change, delete_old_changes
 
@@ -298,6 +299,117 @@ async def users_page(
             "users": users_list,
             "current_user": {"id": admin.id, "username": admin.username},
         },
+    )
+
+
+# ============================================
+# Contact Submission Management
+# ============================================
+
+
+@router.get("/contact-submissions")
+async def contact_submissions_page(
+    request: Request,
+    admin: AdminUser = Depends(require_auth),
+    db: Session = Depends(get_db),
+):
+    """Render the admin page listing all received contact form submissions.
+    
+    Args:
+        request: FastAPI request.
+        admin: Current admin user (from auth).
+        db: Database session.
+        
+    Returns:
+        HTML contact submissions page.
+    """
+    from fastapi.templating import Jinja2Templates
+    
+    templates = Jinja2Templates(directory="app/templates")
+    
+    site = db.query(Site).filter(Site.id == admin.site_id).first()
+    submissions = (
+        db.query(ContactSubmission)
+        .filter(ContactSubmission.site_id == admin.site_id)
+        .order_by(ContactSubmission.created_at.desc())
+        .all()
+    )
+    
+    from zoneinfo import ZoneInfo
+    local_tz = ZoneInfo("Europe/Zurich")
+    
+    def format_timestamp(value: Optional[datetime]) -> str:
+        if not value:
+            return ""
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        return value.astimezone(local_tz).strftime("%d.%m.%Y %H:%M")
+    
+    submissions_list = [
+        {
+            "id": submission.id,
+            "received_at": format_timestamp(submission.created_at),
+            "contact_raw": submission.contact_raw,
+            "contact_value": submission.contact_value,
+            "contact_type": submission.contact_type,
+            "message": submission.message,
+            "ip_address": submission.ip_address,
+            "email_sent": submission.email_sent,
+            "sms_sent": submission.sms_sent,
+        }
+        for submission in submissions
+    ]
+    
+    return templates.TemplateResponse(
+        request,
+        "admin_contact_submissions.html",
+        {
+            "site": site,
+            "submissions": submissions_list,
+        },
+    )
+
+
+@router.delete(
+    "/contact-submissions/{submission_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        401: {"model": ErrorResponse, "description": "Not authenticated"},
+        404: {"model": ErrorResponse, "description": "Submission not found"},
+    },
+)
+async def delete_contact_submission(
+    submission_id: int,
+    admin: AdminUser = Depends(require_auth),
+    db: Session = Depends(get_db),
+) -> None:
+    """Delete a stored contact form submission.
+    
+    Args:
+        submission_id: ID of the submission to delete.
+        admin: Current admin user (from auth).
+        db: Database session.
+        
+    Raises:
+        HTTPException: 404 if the submission does not exist for this site.
+    """
+    submission = db.query(ContactSubmission).filter(
+        ContactSubmission.id == submission_id,
+        ContactSubmission.site_id == admin.site_id,
+    ).first()
+    
+    if not submission:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"error": "not_found", "message": "Kontaktanfrage nicht gefunden"},
+        )
+    
+    db.delete(submission)
+    db.commit()
+    
+    logger.info(
+        f"Admin '{admin.username}' deleted contact submission {submission_id} "
+        f"from site {admin.site_id}"
     )
 
 

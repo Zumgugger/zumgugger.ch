@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontaktanfragen - {{ site.name }}</title>
+    <link rel="stylesheet" href="/static/css/define.css">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <style>
+        .submissions-admin { max-width: 860px; margin: 0 auto; padding: 2rem var(--container-padding); }
+        .submissions-admin-header { display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:2rem; }
+        .submissions-admin h1 { font-size:var(--font-size-3xl); }
+        .submission-item { border:1px solid var(--color-border); border-radius:var(--radius-md); padding:1.25rem; margin-bottom:1rem; background:var(--color-bg); }
+        .submission-head { display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap; margin-bottom:.75rem; }
+        .submission-contact { font-weight:600; font-size:var(--font-size-lg); overflow-wrap:anywhere; }
+        .submission-contact a { color:var(--color-primary); text-decoration:none; }
+        .submission-contact a:hover { text-decoration:underline; }
+        .submission-meta { color:var(--color-text-muted); font-size:var(--font-size-sm); margin-top:.25rem; }
+        .submission-badge { display:inline-block; padding:2px 8px; border-radius:var(--radius-sm); font-size:var(--font-size-xs); background:var(--color-bg-muted); color:var(--color-text-muted); margin-left:.5rem; }
+        .submission-badge.sent { background:var(--color-primary); color:#fff; }
+        .submission-message { white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.6; padding:.75rem 1rem; background:var(--color-bg-muted); border-radius:var(--radius-sm); }
+        .submission-actions { display:flex; justify-content:flex-end; margin-top:.75rem; }
+        .no-submissions { color:var(--color-text-muted); }
+        @media (max-width: 680px) { .submissions-admin-header { flex-direction:column; align-items:flex-start; } }
+    </style>
+</head>
+<body>
+    <main class="submissions-admin">
+        <header class="submissions-admin-header">
+            <div><a href="/" class="back-link">Zur Website</a><h1>Kontaktanfragen</h1></div>
+            <a class="btn btn-secondary" href="/">Fertig</a>
+        </header>
+        <section>
+            {% if submissions %}
+            {% for submission in submissions %}
+            <article class="submission-item" data-submission-id="{{ submission.id }}">
+                <div class="submission-head">
+                    <div>
+                        <div class="submission-contact">
+                            {% if submission.contact_type == "email" %}
+                            <a href="mailto:{{ submission.contact_value }}">{{ submission.contact_value }}</a>
+                            {% else %}
+                            <a href="tel:{{ submission.contact_value }}">{{ submission.contact_value }}</a>
+                            {% endif %}
+                            {% if submission.contact_raw and submission.contact_raw != submission.contact_value %}
+                            <span class="submission-meta">(eingegeben: {{ submission.contact_raw }})</span>
+                            {% endif %}
+                        </div>
+                        <div class="submission-meta">
+                            {{ submission.received_at }}
+                            {% if submission.ip_address %} · IP: {{ submission.ip_address }}{% endif %}
+                            <span class="submission-badge{% if submission.email_sent %} sent{% endif %}">E-Mail {{ "gesendet" if submission.email_sent else "nicht gesendet" }}</span>
+                            <span class="submission-badge{% if submission.sms_sent %} sent{% endif %}">SMS {{ "gesendet" if submission.sms_sent else "nicht gesendet" }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="submission-message">{{ submission.message }}</div>
+                <div class="submission-actions">
+                    <button class="btn btn-secondary delete-submission" type="button">Löschen</button>
+                </div>
+            </article>
+            {% endfor %}
+            {% else %}
+            <p class="no-submissions">Noch keine Kontaktanfragen erhalten.</p>
+            {% endif %}
+        </section>
+    </main>
+<script>
+document.querySelectorAll('.delete-submission').forEach((button) => button.addEventListener('click', async function() {
+    const item = this.closest('[data-submission-id]');
+    if (!window.confirm('Kontaktanfrage wirklich löschen?')) return;
+    const response = await fetch('/admin/contact-submissions/' + item.dataset.submissionId, { method: 'DELETE' });
+    if (response.ok) item.remove();
+    else window.alert('Löschen fehlgeschlagen');
+}));
+</script>
+</body>
+</html>
