@@ -112,6 +112,13 @@ class TestPublicRoutes:
         
         assert response.status_code == 404
     
+    def test_home_page_www_host_resolves_site(self, client: TestClient, site_with_content: Site):
+        """www.<domain> in the Host header serves the same site as <domain>."""
+        response = client.get("/", headers={"host": f"www.{site_with_content.domain}"})
+        
+        assert response.status_code == 200
+        assert site_with_content.name in response.text
+    
     def test_impressum_page(self, client: TestClient, site_with_content: Site):
         """Test that GET /impressum returns legal page."""
         response = client.get("/impressum", params={"site_domain": site_with_content.domain})

@@ -161,6 +161,10 @@ def get_site_from_request(
     if not site_domain:
         return None
     
+    # Treat www.<domain> the same as <domain> (domains are stored without www)
+    if site_domain.startswith("www."):
+        site_domain = site_domain[4:]
+    
     return db.query(Site).filter(Site.domain == site_domain).first()
 
 

@@ -71,6 +71,10 @@ def get_site_from_request(request: Request, db: Session) -> Optional[Site]:
         # Remove port if present
         site_domain = host.split(":")[0]
     
+    # Treat www.<domain> the same as <domain> (domains are stored without www)
+    if site_domain.startswith("www."):
+        site_domain = site_domain[4:]
+    
     # Try to find the site
     site = db.query(Site).filter(Site.domain == site_domain).first()
     
